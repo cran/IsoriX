@@ -15,7 +15,7 @@ library(knitr)
 set.seed(123)  ## set seed for entire manuscript
 # set global options for knitr (if changed, all cashed chunked will be rerun!)
 knitr::opts_chunk$set(cache=FALSE)
-do.eval <- FALSE ## to check that it does work, put TRUE
+do.eval <- TRUE ## to check that it does work, put TRUE
 ```
 
 Welcome to __IsoriX__, in this vignette we present the steps required for you to save your isoscape or assignment maps on your hard drive.
@@ -59,17 +59,17 @@ Our goal is to save the plot of this isoscape on the hard drive so we can includ
 
 ```{r, make plot}
 ## we load the objects that are used to decorate the maps
-data(worldcountries)
+data(countries)
 data(oceanmask)
-data(isoscapepalette)
+data(isopalette1)
 
 ## we create the plot (but do not display it)
 plot.mean.isoscape <- plot(
     x=isoscape,
     which="mean",
-    borders=list(borders=worldcountries),
+    borders=list(borders=countries),
     mask=list(mask=oceanmask),
-    palette=isoscapepalette,
+    palette=isopalette1,
     plot=FALSE
 )
 ```

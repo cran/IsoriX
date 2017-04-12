@@ -2,67 +2,45 @@
 
 .onAttach <-
 function (
-	lib,
-	pkg
-	) {
-	## This function should not be called by the user.
-	## It display a message when the package is being loaded.
-	packageStartupMessage(  # display message
-		"\n ############################################",
-		"\n #                                          #",
-		"\n #    IsoriX (version ", packageDescription("IsoriX")$Version,") is loaded!     #",
-		"\n #                                          #",
-		"\n #  Type ?IsoriX for a short description    #",
-		"\n #                                          #",
-		"\n #  Type browseVignettes(package='IsoriX')  #",
-		"\n #    for details about how this package    #",
-		"\n #         works and how to use it          #",
-		"\n #                                          #",
-		"\n #  Type news(package='IsoriX') for news    #",
-		"\n #                                          #",
-		"\n ############################################", "\n")
-	set_ll_warn(TRUE)  ##makes sp creating warning instead of errors when lat/long out of boundaries
-
-	## Let us set the new proxy method
-	pr_DB$set_entry(FUN = .Dist.earth.mat, names = c("Earth", "dist.earth"))
-	pr_DB$modify_entry(
-		names = "Earth",
-		description = "Approximate distance in Km between points on earth surface.",
-		loop = FALSE,
-		distance = TRUE
-		)
-
-	}
-
-
-.Dist.earth.mat <- function (x, y=NULL) {
-	## This function should not be called by the user but is itself called by other functions.
-	## It compute orthodromic distances in Km between locations.
-	if(is.null(y)) {
-		coslat <- cos(x[, 2]*pi/180)
-		sinlat <- sin(x[, 2]*pi/180)
-		coslon <- cos(x[, 1]*pi/180)
-		sinlon <- sin(x[, 1]*pi/180)
-		pp <- cbind(coslat * coslon, coslat * sinlon, sinlat) %*% 
-				t(cbind(coslat * coslon, coslat * sinlon, sinlat))
-	} else { 
-		coslat1 <- cos(x[, 2]*pi/180)
-		sinlat1 <- sin(x[, 2]*pi/180)
-		coslon1 <- cos(x[, 1]*pi/180)
-		sinlon1 <- sin(x[, 1]*pi/180)
-		coslat2 <- cos(y[, 2]*pi/180)
-		sinlat2 <- sin(y[, 2]*pi/180)
-		coslon2 <- cos(y[, 1]*pi/180)
-		sinlon2 <- sin(y[, 1]*pi/180)
-		pp <- cbind(coslat1 * coslon1, coslat1 * sinlon1, sinlat1) %*% 
-				t(cbind(coslat2 * coslon2, coslat2 * sinlon2, sinlat2))
-	}
-	## Earth radius used for approximation = 6371.009 = 1/3*(2*6378.137+6356.752)  [details on https://en.wikipedia.org/wiki/Great-circle_distance]
-	pp <- 6371.009 * acos(ifelse(abs(pp) > 1, 1 * sign(pp), pp))
-	if (is.null(y)) pp <- as.dist(pp)  ## spaMM wants an half matrix in this case, not a full one
-	return(pp)
+  libname,
+  pkgname
+  ) {
+  ## This function should not be called by the user.
+  ## It display a message when the package is being loaded
+  packageStartupMessage(  # display message
+    "\n IsoriX version ", packageDescription("IsoriX")$Version," is loaded!",
+    "\n",
+    "\n Many functions and objects have changed names since the version 0.4.",
+    "\n This is to make IsoriX more intuitive for you to use.",
+    "\n We will do our best to limit changes in names in the future!!",
+    "\n",
+    "\n Type:",
+    "\n    * ?IsoriX for a short description.",
+    "\n    * browseVignettes(package='IsoriX') for tutorials.",
+    "\n    * news(package='IsoriX') for news.",
+    "\n")
 }
 
+.IsoriX_options <- new.env(parent = emptyenv())
+
+.onLoad <-
+  function (
+    libname,
+    pkgname
+  ) {
+    ## This function should not be called by the user.
+    ## It changes the default beahviour of sp concerning lat/long boundaries
+    .IsoriX_options$sp_ll_warn <- get_ll_warn()
+    set_ll_warn(TRUE)  ## makes sp creating warning instead of errors when lat/long out of boundaries
+  }
+
+.onUnload <- function(libpath) {
+  ## This function should not be called by the user.
+  ## It restores the original behaviour of sp
+  set_ll_warn(.IsoriX_options$sp_ll_warn)
+  }
+
+.NiceRound <- function(x, digits) formatC(round(x, digits), digits=digits, format="f")
 
 .CreateRaster <-
 function(
@@ -154,52 +132,64 @@ function(
 }
 
 
-.BuildAdditionalLayers <- function(x, sources, calib, borders, mask) {
+.BuildAdditionalLayers <- function(x, sources, calib, borders, mask, mask2=NULL) {
 	## This function should not be called by the user but is itself called by other functions.
 	## It build the additional layers for plots
 
 	## layer for sources
-	if(!sources$draw)
+	if (!sources$draw) {
 		sources.layer <- layer()
-	else
+	}	else {
 		sources.layer <- layer(sp.points(sources, col=pt$col,
 			cex=pt$cex, pch=pt$pch, lwd=pt$lwd),
 			data=list(sources=x$sp.points$sources,
 				pt=sources, sp.points=sp.points))
+	}
 
 	## layer for calibration points
-	if(is.null(calib))
+	if (is.null(calib)) {
 		calib.layer <- layer()
-	else {
-		if(!calib$draw)
-			calib.layer <- layer()
-		else
+	}	else {
+		if(!calib$draw) {
+		  calib.layer <- layer()
+		}	else {
 			calib.layer <- layer(sp.points(calib, col=pt$col,
 				cex=pt$cex, pch=pt$pch, lwd=pt$lwd),
 				data=list(calib=x$sp.points$calibs,
 					pt=calib, sp.points=sp.points))
+		}
 	}
 
 	## layer for country borders
-	if(is.null(borders$borders))
+	if (is.null(borders$borders)) {
 		borders.layer <- layer()
-	else
+	}	else {
 		borders.layer <- layer(sp.polygons(b$borders, lwd=b$lwd,
 			col=b$col, fill="transparent"),
 			data=list(b=borders, sp.polygons=sp.polygons))
-
+	}
+  
 	## layer for mask
-	if(is.null(mask$mask))
+	if (is.null(mask$mask)) {
 		mask.layer <- layer()
-	else
-		mask.layer <- layer(sp.polygons(m$mask, fill=m$col),
+	} else {
+		mask.layer <- layer(sp.polygons(m$mask, fill=m$fill, col=m$col, lwd=m$lwd),
 			data=list(m=mask, sp.polygons=sp.polygons))
-
+	}
+  
+	if (is.null(mask2$mask)) {
+	  mask2.layer <- layer()
+	} else {
+	  mask2.layer <- layer(sp.polygons(m$mask, fill=m$fill, col=m$col, lwd=m$lwd),
+	                      data=list(m=mask2, sp.polygons=sp.polygons))
+	}
+  
 	out <- list(
 		sources.layer=sources.layer,
 		calib.layer=calib.layer,
 		borders.layer=borders.layer,
-		mask.layer=mask.layer
+		mask.layer=mask.layer,
+		mask2.layer=mask2.layer
 		)
 	
 	## tweack to please code checking procedure
