@@ -1,5 +1,5 @@
 Package: IsoriX
-Version: 0.6
+Version: 0.7
 Date: 2017-06-29
 Encoding: UTF-8
 Title: Isoscape Computation and Inference of Spatial Origins using
@@ -11,9 +11,9 @@ Author:
     Stephanie Kramer-Schadt [aut, cre]
 Maintainer: Alexandre Courtiol <alexandre.courtiol@gmail.com>
 Depends: R (>= 3.1.0)
-Imports: graphics, grDevices, grid, latticeExtra, numDeriv, proxy,
-        raster, rasterVis (>= 0.30), sp, spaMM (>= 2.1.3), stats,
-        tools, utils, viridisLite
+Imports: graphics, grDevices, grid, latticeExtra, numDeriv, raster,
+        rasterVis (>= 0.30), sp, spaMM (>= 2.1.3), stats, tools, utils,
+        viridisLite
 Description: 
   Building isoscapes using mixed models and inferring the geographic origin of 
   organisms based on their isotopic ratios. This package is essentially a 
@@ -30,6 +30,6 @@ URL: https://github.com/courtiol/IsoriX_project/
 BugReports: https://github.com/courtiol/IsoriX_project/issues/
 RoxygenNote: 6.0.1
 NeedsCompilation: no
-Packaged: 2017-07-07 18:10:08 UTC; alex
+Packaged: 2017-08-14 07:05:28 UTC; alex
 Repository: CRAN
-Date/Publication: 2017-07-08 03:30:26 UTC
+Date/Publication: 2017-08-14 09:53:16 UTC
