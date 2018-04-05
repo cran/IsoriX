@@ -1,4 +1,4 @@
-c3822de1d703e36ca8353401cd7e19cd *DESCRIPTION
+4c5311ca0e3f548dc9901e69f013c638 *DESCRIPTION
 7a7f8ce09e2b5087e7cf548199b2d2cd *NAMESPACE
 3dadcc0f583f0e9d27cfe9d76dad2165 *R/IsoriX-dataset.R
 fef9795ebb4e5c75b30278ab58425075 *R/IsoriX-package.R
@@ -9,13 +9,13 @@ d61674712b55ed34a697c5ffdef53ef5 *R/getelev.R
 352f9236152928d10492543bcfdb277f *R/isofind.R
 7a14a38bea71f1e08471233db146b223 *R/isofit.R
 74376026585d94221ae19332bdb1c0ea *R/isoscape.R
-6d0199da8252514bf3162aabe551cd24 *R/isosim.R
+1ef747ec915666a14b3b20b4df9ada22 *R/isosim.R
 4ff776f362257903365a329b0af01e9a *R/options.R
-35a512f3a0cbf3275135377ba5669cd9 *R/plots.R
+0cc2a22abfa07a9c0732bfcd433aee3e *R/plots.R
 6838134d4b1e2512bf247df8c27748d3 *R/prepcipitate.R
 c4baa6ce43370f0aab6221fbaf5dc90a *R/prepdata.R
 77575824a48688a77a5860a71fde787e *R/relevate.R
-387b2ac97f42827b6d66b95bb611cf69 *build/vignette.rds
+fb9344bd473b8ee063a69f98da05f294 *build/vignette.rds
 9928027a8038c603c2adbc9a058f0157 *data/AssignDataAlien.rda
 fae22e1d20c1e48e1578818ec449a0fa *data/AssignDataBat.rda
 946b32c0158d481cfcd5616023953ca8 *data/CalibDataAlien.rda
@@ -28,7 +28,7 @@ fae22e1d20c1e48e1578818ec449a0fa *data/AssignDataBat.rda
 cd38719b2e8d5d75e6d1560914ea8d0f *data/isopalette1.rda
 b884de661bd41142ff3bfc67ee7af26a *data/isopalette2.rda
 357729bd74e0cbe4d1efb56f2a21c58d *inst/CITATION
-7a95e59e490da6e8583202e1768dc875 *inst/NEWS.Rd
+5e16f379c088bcc2c2a8b99c52766e38 *inst/NEWS.Rd
 70e5338c2a1ae10a607236ddc4f949c7 *inst/doc/IUCNmask.pdf
 f163c7301d6188b9ecd3577acffe6108 *inst/doc/IUCNmask.pdf.asis
 b8fda34e8a073d3080f23fa2bd50b63e *inst/doc/Precipitation.pdf
@@ -64,7 +64,7 @@ a96c1619418c103bc2412783b0d166d8 *man/isomultifit.Rd
 0f3d3acdcd5b7f20f97e114826e429f5 *man/isomultiscape.Rd
 ca1f5ee18400b54a19077a359bdf531a *man/isopalette2.Rd
 2120fe8d045c67f669b016977c25c0a0 *man/isoscape.Rd
-6a74eddab454a0256e949e0c77fdce3f *man/isosim.Rd
+e8c8214b08eb95a7eeeaefc82bbb440f *man/isosim.Rd
 38e8c9bdb02c3086726c4a03d2c0dbc4 *man/options.Rd
 38470907713f1f47d5b609209b4250f4 *man/plots.Rd
 4158e218e8df7882484ef06f5aefa692 *man/prepcipitate.Rd
