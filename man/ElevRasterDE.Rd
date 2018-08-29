@@ -9,8 +9,8 @@
 \url{http://topotools.cr.usgs.gov/gmted_viewer/}
 }
 \description{
-This raster contains the elevation of the surface of Germany [meters above sea
-level] with a resolution of approximately 50 square-km.
+This raster contains the elevation of the surface of Germany (meters above sea
+level) with a resolution of approximately 30 square-km.
 }
 \details{
 This raster contains elevation data of Germany in a highly aggregated form
@@ -36,43 +36,33 @@ provide the url link of the \var{tif} file in the example below.
 }
 \examples{
 
-
-## The following example require to have downloaded
+## The following example require to download
 ## a large elevation raster with the function getelev()
-## and will therefore not run unless you type:
-## example(ElevRasterDE, run.dontrun=TRUE)
+## and will therefore not run unless you uncomment it
 
-\dontrun{
-### Creating the object ElevRasterDE
-
-## Download the tif file (ca. 700 Mb)
-## (see ?getelev for details on how to get the tif file)
-# getelev()
-
-## Convert the tif into R raster format
-if(require(raster)) {
-  elevationrasterbig <- raster("gmted2010_30mn.tif")
-  
-  ## Create the highly agregated elevation raster
-  ElevRasterDE <- relevate(elevationrasterbig,
-                           aggregation.factor = 10,
-                           manual.crop = c(5.5, 15.5, 47, 55.5))
-                           
-  ## Plot the elevation
-  if (require("sp") & require("rasterVis")) {
-    levelplot(ElevRasterDE, margin = FALSE, par.settings=RdBuTheme()) +
-      layer(sp.polygons(CountryBorders, col = "white"))
-  }
-  
-  ## Compute crudely the resolution:
-  median(values(area(ElevRasterDE)))  ## approximative size of cells in km2
-}
-}
-
+#### Creating the object ElevRasterDE
+#
+### Download the tif file (ca. 700 Mb)
+### (see ?getelev for details on how to get the tif file)
+#getelev()
+#
+### Convert the tif into R raster format
+#  ElevationRasterBig <- raster("gmted2010_30mn.tif")
+#  
+#  ## Create the highly agregated elevation raster
+#  ElevRasterDE <- prepraster(ElevationRasterBig,
+#                             aggregation_factor = 10,
+#                             manual_crop = c(5.5, 15.5, 47, 55.5))
+#                           
+#  ## Plot the elevation
+#  levelplot(ElevRasterDE, margin = FALSE, par.settings=RdBuTheme()) +
+#    layer(sp.polygons(CountryBorders, col = "white"))
+#  
+#  ## Compute crudely the resolution:
+#  median(values(area(ElevRasterDE)))  ## approximative size of cells in km2
 
 }
 \seealso{
-\code{\link{relevate}} to crop and/or aggregate the elevation
-raster
+\code{\link{prepraster}} to crop and/or aggregate this raster
 }
 \keyword{datasets}

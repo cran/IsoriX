@@ -22,16 +22,14 @@ if(require(sp)) {
 
 ## How did we create this file?
 
-if(require(raster) & require(rgeos)){
-    worldlimit <- as(extent(CountryBorders), "SpatialPolygons")
-    proj4string(worldlimit) <- crs(CountryBorders)
-    OceanMask <- gDifference(worldlimit, CountryBorders)  
-    OceanMask
-    
-## Uncomment the following to store the file as we did
-#save(OceanMask, file = "OceanMask.rda", compress = "xz")
-
-}
+## Uncomment the following to create the file as we did
+#if(require(raster) & require(rgeos)){
+#    worldlimit <- as(extent(CountryBorders), "SpatialPolygons")
+#    proj4string(worldlimit) <- crs(CountryBorders)
+#    OceanMask <- gDifference(worldlimit, CountryBorders)  
+#    OceanMask
+#    save(OceanMask, file = "OceanMask.rda", compress = "xz")
+#}
 
 
 }

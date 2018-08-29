@@ -5,21 +5,21 @@
 \title{Simulate datasets for calibrations or assignments}
 \usage{
 create_aliens(calib_fn = list(intercept = 3, slope = 0.5, resid_var = 5),
-  isoscape = NULL, coordinates = NA, elevation_raster = NULL,
-  n_sites = 1, min_n_samples = 1, max_n_samples = 10)
+  isoscape = NULL, coordinates = NA, raster = NULL, n_sites = NA,
+  min_n_samples = 1, max_n_samples = 10)
 }
 \arguments{
-\item{calib_fn}{A \var{list} containing the parameter values describing the 
+\item{calib_fn}{A \var{list} containing the parameter values describing the
 relationship between the isotope values in the environment and those in the
 simulated organisms. This list must contain three parameters: the
 intercept, the slope, and the residual variance.}
 
 \item{isoscape}{The output of the function \code{\link{isoscape}}}
 
-\item{coordinates}{An optional \var{data.frame} with columns \code{siteID}, 
+\item{coordinates}{An optional \var{data.frame} with columns \code{site_ID},
 \code{long} and \code{lat}}
 
-\item{elevation_raster}{A \var{RasterLayer} containing an elevation raster}
+\item{raster}{A \var{RasterLayer} containing an elevation raster}
 
 \item{n_sites}{The number of sites from which the simulated organisms
 originate (\var{integer})}
@@ -32,60 +32,60 @@ site}
 }
 \value{
 This functions returns a \var{data.frame} (see example for column
-  names)
+names)
 }
 \description{
 This function allows to simulate data so to provide examples for the
 calibration and for the assignment procedure. We name the simulated
-individuals 'Aliens' so to make it clear that the data we use to illustrate 
+individuals 'Aliens' so to make it clear that the data we use to illustrate
 our package are not real data.
 }
 \details{
 The isostopic values for the organisms are assumed to be linearly related to
-the one from the environement. The linear function can be parameterized using
+the one from the environment. The linear function can be parametrized using
 the first argument of the function (\code{calib_fn}). With this function the
 user can simulate data for different sites.
 
-The number and locations of sites can be controled in two ways. A first
-possiblity is to use the argument \code{n_sites}. The sites will then be
+The number and locations of sites can be controlled in two ways. A first
+possibility is to use the argument \code{n_sites}. The sites will then be
 selected randomly among the locations present in the isoscape (argument
-\code{isoscape}) provided to this function. An alternative possiblity is to
-provide a data frame containing three columns (\code{siteID}, \code{long} and
+\code{isoscape}) provided to this function. An alternative possibility is to
+provide a data frame containing three columns (\code{site_ID}, \code{long} and
 \code{lat}) to input the coordinate of the sampling site manually.
 
-Irrespectivelly of how locations are choosen, a random number of observations
-will be drawn, at each site, according to a uniform distribution bounded by 
+Irrespectively of how locations are chosen, a random number of observations
+will be drawn, at each site, according to a uniform distribution bounded by
 the values of the argument \code{min_n_samples} and \code{max_n_samples}.
 
-From the selected coordinates, the isotope values for the environement are
+From the selected coordinates, the isotope values for the environment are
 directly extracted from the corresponding point predictions stored in the
 isoscape object. No uncertainty is considered during this process. Then the
 linear calibration defines the means of the isotope values for the simulated
-organims. The actual values is then drawn from a Gaussian distribution
-centered around such mean and a variance defined by the residual variance
+organisms. The actual values is then drawn from a Gaussian distribution
+centred around such mean and a variance defined by the residual variance
 (\code{resid_var}) input within the list \code{calib_fn}.
 }
 \examples{
 
 ## The examples below will only be run if sufficient time is allowed
-## You can change that by typing e.g. IsoriX.options(example_maxtime = XX)
+## You can change that by typing e.g. options_IsoriX(example_maxtime = XX)
 ## if you want to allow for examples taking up to ca. XX seconds to run
 ## (so don't write XX but put a number instead!)
 
-if(IsoriX.getOption("example_maxtime") > 30) {
+if(getOption_IsoriX("example_maxtime") > 30) {
 
 ## We fit the models for Germany
-GNIPDataDEagg <- prepdata(data = GNIPDataDE)
+GNIPDataDEagg <- prepsources(data = GNIPDataDE)
 
-GermanFit <- isofit(iso.data = GNIPDataDEagg)
+GermanFit <- isofit(data = GNIPDataDEagg)
 
 ## We build the isoscapes
-isoscape <- isoscape(elevation.raster = ElevRasterDE, isofit = GermanFit)
+GermanScape <- isoscape(raster = ElevRasterDE, isofit = GermanFit)
 
 ## We create a simulated dataset with 25 sites and 5 observations per site
 Aliens <- create_aliens(calib_fn = list(intercept = 3, slope = 0.5, resid_var = 5),
-                        isoscape = isoscape,
-                        elevation_raster = ElevRasterDE,
+                        isoscape = GermanScape,
+                        raster = ElevRasterDE,
                         n_sites = 25,
                         min_n_samples = 5,
                         max_n_samples = 5)
@@ -95,31 +95,30 @@ Aliens
 
 ## We plot the relationship between the environmental isotope values
 ## and those from the simulated organisms
-plot(tissue.value ~ env.value, data = Aliens, ylab = "Tissue", xlab = "Environment")
+plot(sample_value ~ source_value, data = Aliens, ylab = "Tissue", xlab = "Environment")
 abline(3, 0.5, col = "blue") ## the true relationship
 
 ## We create a simulated dataset with 2 sites imputing coordinates manually
 Aliens2 <- create_aliens(calib_fn = list(intercept = 3, slope = 0.5, resid_var = 5),
-                         isoscape = isoscape,
-                         coordinates = data.frame(siteID = c("Berlin", "Bielefeld"),
+                         isoscape = GermanScape,
+                         coordinates = data.frame(site_ID = c("Berlin", "Bielefeld"),
                                                   long   = c(13.52134, 8.49914),
                                                   lat    = c(52.50598, 52.03485)),
-                         elevation_raster = ElevRasterDE,
-                         n_sites = 25,
+                         raster = ElevRasterDE,
                          min_n_samples = 5,
                          max_n_samples = 5)
 
-head(Aliens2)
+Aliens2
 
 }
 
 }
 \seealso{
 \code{\link{calibfit}} for a calibration based on simulated data
-  
-  \code{\link{isofind}} for an assignment based on simulated data
-  
-  \code{\link{IsoriX}} for the complete work-flow of our package
+
+\code{\link{isofind}} for an assignment based on simulated data
+
+\code{\link{IsoriX}} for the complete work-flow of our package
 }
 \keyword{simulate}
 \keyword{simulation}
