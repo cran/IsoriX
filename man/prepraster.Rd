@@ -4,9 +4,15 @@
 \alias{prepraster}
 \title{Prepare the structural raster}
 \usage{
-prepraster(raster, isofit = NULL, margin_pct = 5,
-  aggregation_factor = 0L, aggregation_fn = mean, manual_crop = NULL,
-  verbose = interactive())
+prepraster(
+  raster,
+  isofit = NULL,
+  margin_pct = 5,
+  aggregation_factor = 0L,
+  aggregation_fn = mean,
+  manual_crop = NULL,
+  verbose = interactive()
+)
 }
 \arguments{
 \item{raster}{The structural raster (\var{RasterLayer})}
@@ -149,9 +155,9 @@ PacificA <- prepraster(EmptyRaster, manual_crop = c(110, -70, -90, 90))
 extent(PacificA) # note that the extent has changed!
 
 ## We plot (note the use of the function shift()!)
-levelplot(PacificA, margin = FALSE, colorkey = FALSE, col = "blue")+
-  layer(sp.polygons(CountryBorders, fill = "black"))+
-  layer(sp.polygons(shift(CountryBorders, x = 360), fill = "black"))
+levelplot(PacificA, margin = FALSE, colorkey = FALSE, col = "blue") +
+  layer(sp.polygons(CountryBorders, fill = "black")) +
+  layer(sp.polygons(shift(CountryBorders, dx = 360), fill = "black"))
 
 }
 

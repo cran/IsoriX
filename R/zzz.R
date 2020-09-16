@@ -7,11 +7,6 @@
   packageStartupMessage(## display message
                         "\n IsoriX version ", utils::packageDescription("IsoriX")$Version," is now loaded!",
                         "\n",
-                        "\n The names of all objects (including functions) are finally getting stable,",
-                        "\n but they have changed a lot since the version 0.7.1 (sorry!).",
-                        "\n We kept revising them to make IsoriX more intuitive for you to use.",
-                        "\n We will do our best to limit changes from version 0.8 onward!!",
-                        "\n",
                         "\n Type:",
                         "\n",
                         "\n    * ?IsoriX",
@@ -183,17 +178,13 @@
   }
   
   if (class(var) %in% c("RasterLayer")) {
-    max_var <- raster::maxValue(var)
-    min_var <- raster::minValue(var)
-    var <- unique(c(min_var,
-                    raster::quantile(var, seq(min_var, max_var, length = nb_quantiles)),
-                    max_var))
+    var <- raster::quantile(var, seq(0, 1, length = nb_quantiles))
     return(var)
   } else if (class(var) %in% c("RasterStack", "RasterBrick")) {
     max_var <- max(raster::maxValue(var))
     min_var <- min(raster::minValue(var))
     var <- unique(c(min_var,
-                    apply(raster::quantile(var, seq(min_var, max_var, length = nb_quantiles)), 2, stats::median),
+                    apply(raster::quantile(var, seq(0, 1, length = nb_quantiles)), 2, stats::median),
                     max_var))
     return(var)
   }

@@ -12,6 +12,36 @@
   }
 }
 
+\section{version 0.8.2}{
+  \subsection{New features}{
+    \itemize{
+      \item argument ylim for the plotting function for calibration fits
+      \item it is now possible to calibrate data containing missing isotopic values
+      \item it is now possible to assign data containing missing isotopic values
+      }
+  }
+  \subsection{Geeky change}{
+    \itemize{
+      \item the SpatialPolygons CountryBorders and OceanMask have been rebuilt for possibly improving the compatibility with new sp & rgdal
+      \item the website for WorlClim has now changed address, so links have been updated
+      \item rgdal is now listed as a suggested package
+      }
+  }
+  \subsection{Minor change}{
+    \itemize{
+      \item several weblinks had changed and have been updated
+      }
+  }
+}
+
+\section{version 0.8.1}{
+  \subsection{Solved BUGS}{
+    \itemize{
+      \item fix issue #113: the plotting function was not working for isoscapes not stored in memory due to a wrong use of the quantile function. Many thanks to Dr. Gary Roemer and Amy Withers for reporting it! 
+      }
+  }
+}
+
 \section{version 0.8.1}{
   \subsection{New features}{
     \itemize{

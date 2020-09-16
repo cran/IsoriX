@@ -6,18 +6,24 @@
 \alias{summary.ISOFIT}
 \title{Fit the isoscape models}
 \source{
-\url{http://kimura.univ-montp2.fr/~rousset/spaMM.htm}
+\url{https://kimura.univ-montp2.fr/~rousset/spaMM.htm}
 }
 \usage{
-isofit(data, mean_model_fix = list(elev = FALSE, lat_abs = FALSE, lat_2 =
-  FALSE, long = FALSE, long_2 = FALSE), disp_model_fix = list(elev =
-  FALSE, lat_abs = FALSE, lat_2 = FALSE, long = FALSE, long_2 = FALSE),
+isofit(
+  data,
+  mean_model_fix = list(elev = FALSE, lat_abs = FALSE, lat_2 = FALSE, long = FALSE,
+    long_2 = FALSE),
+  disp_model_fix = list(elev = FALSE, lat_abs = FALSE, lat_2 = FALSE, long = FALSE,
+    long_2 = FALSE),
   mean_model_rand = list(uncorr = TRUE, spatial = TRUE),
   disp_model_rand = list(uncorr = TRUE, spatial = TRUE),
   uncorr_terms = list(mean_model = "lambda", disp_model = "lambda"),
   spaMM_method = list(mean_model = "fitme", disp_model = "fitme"),
-  dist_method = "Earth", control_mean = list(),
-  control_disp = list(), verbose = interactive())
+  dist_method = "Earth",
+  control_mean = list(),
+  control_disp = list(),
+  verbose = interactive()
+)
 }
 \arguments{
 \item{data}{The \var{dataframe} containing the data used for fitting the
@@ -222,7 +228,7 @@ AIC(GermanFit$disp_fit)
 }
 \references{
 Courtiol, A., Rousset, F. (2017). Modelling isoscapes using mixed
-models. \url{https://www.biorxiv.org/content/early/2017/10/23/207662}
+models. \url{https://www.biorxiv.org/content/10.1101/207662v1}
 
 Courtiol A, Rousset F, Rohwäder M, Soto DX, Lehnert L, Voigt CC, Hobson KA, Wassenaar LI, Kramer-Schadt S (2019). Isoscape
 computation and inference of spatial origins with mixed models using the R package IsoriX. In Hobson KA, Wassenaar LI (eds.),

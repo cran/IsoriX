@@ -15,39 +15,12 @@
 \alias{prepiso}
 \alias{RElevate}
 \alias{relevate}
-\title{Defunct and depreciated functions}
-\usage{
-Calibfit(...)
-
-GetElev(...)
-
-Isofit(...)
-
-Isorix(...)
-
-Isoscape(...)
-
-Isosim(...)
-
-QueryGNIP(...)
-
-queryGNIP(...)
-
-prepdata(...)
-
-prepelev(...)
-
-prepiso(...)
-
-RElevate(...)
-
-relevate(...)
-}
+\title{Defunct and deprecated functions}
 \arguments{
-\item{...}{The call of the defunct or depreciated function}
+\item{...}{The call of the defunct or deprecated function}
 }
 \description{
 The function you asked help for has been defunct (i.e. it does not longer
-exists) or depreciated (i.e. it will disappear soon). A new function with a
+exists) or deprecated (i.e. it will disappear soon). A new function with a
 different name is surely doing the old job.
 }
