@@ -1,59 +1,60 @@
 #' Prepare the structural raster
-#' 
+#'
 #' This function prepares the structural raster for the follow-up analyses. The
 #' size and extent of the structural raster defines the resolution at which the
 #' isoscapes and the assignments are defined.
-#' 
-#' This functions allows the user to crop a raster according to
-#' either the extent of the isoscape or manually. If a fitted isoscape object
-#' is provided (see \code{\link{isofit}}), the function extracts the observed
-#' locations of isotopic sources from the model object and crops the structural
-#' raster accordingly. Alternatively, \code{manual_crop} allows you to crop the
-#' structural raster to a desired extent. If no model and no coordinates for
-#' manual cropping are provided, no crop will be performed. Importantly,
-#' cropping is recommended as it prevents extrapolations outside the
-#' latitude/longitude range of the source data. Predicting outside the range of
-#' the source data may lead to highly unreliable predictions.
-#' 
+#'
+#' This functions allows the user to crop a raster according to either the
+#' extent of the isoscape or manually. If a fitted isoscape object is provided
+#' (see [isofit]), the function extracts the observed locations of isotopic
+#' sources from the model object and crops the structural raster accordingly.
+#' Alternatively, `manual_crop` allows you to crop the structural raster to a
+#' desired extent. If no model and no coordinates for manual cropping are
+#' provided, no crop will be performed. Importantly, cropping is recommended as
+#' it prevents extrapolations outside the latitude/longitude range of the source
+#' data. Predicting outside the range of the source data may lead to highly
+#' unreliable predictions.
+#'
 #' Aggregation changes the spatial resolution of the raster, making computation
 #' faster and using less memory (this can affect the assignment; see note
 #' below). An aggregation factor of zero (or one) keeps the resolution constant
 #' (default).
-#' 
-#' This function relies on calls to the functions
-#' \code{\link[raster]{aggregate}} and \code{\link[raster]{crop}} from the
-#' package  \pkg{\link[raster]{raster}}. It thus share the limitations of these
-#' functions. In particular, \code{\link[raster]{crop}} expects extents with
+#'
+#' This function relies on calls to the functions [raster::aggregate] and
+#' [raster::crop] from the package \pkg{raster}. It thus share the limitations
+#' of these functions. In particular, [raster::crop] expects extents with
 #' increasing longitudes and latitudes. We have tried to partially relax this
 #' constrains for longitude and you can use the argument \code{manual_crop} to
 #' provide longitudes in decreasing order, which is useful to centre a isoscape
 #' around the pacific for instance. But this fix does not solve all the
 #' limitations as plotting polygons or points on top of that remains problematic
-#' (see example bellow). We will work on this on the future but we have other 
+#' (see example bellow). We will work on this on the future but we have other
 #' priorities for now (let us know if you really need this feature).
 #' 
-#' @param raster The structural raster (\var{RasterLayer})
-#' @param isofit The fitted isoscape model returned by the function
-#' \code{\link{isofit}}
-#' @param margin_pct The percentage representing by how much the space should 
-#' extend outside the range of the coordinates of the sources
-#' (default = 5). 
-#' @param aggregation_factor The number of neighbouring cells (\var{integer})
-#' to merge during aggregation
-#' @param aggregation_fn The \var{function} used to aggregate cells
-#' @param manual_crop A vector of four coordinates (\var{numeric}) for manual
-#' cropping, e.g. the spatial extent
-#' @param verbose A \var{logical} indicating whether information about the
-#' progress of the procedure should be displayed or not while the function is
-#' running. By default verbose is \var{TRUE} if users use an interactive R
-#' session, and \var{FALSE} otherwise.
-#' @return The prepared structural raster of class \var{RasterLayer}
+#' @inheritParams getelev
+#' @param raster The structural raster (*RasterLayer*)
+#' @param isofit The fitted isoscape model returned by the function [isofit]
+#' @param aggregation_factor The number of neighbouring cells (*integer*) to
+#'   merge during aggregation
+#' @param aggregation_fn The *function* used to aggregate cells
+#' @param manual_crop A vector of four coordinates (*numeric*) for manual
+#'   cropping, e.g. the spatial extent
+#' @param values_to_zero A *numeric vector* of length two specifying the range
+#'   of values for the structural raster that must be turned into 0. Default is
+#'   `c(-Inf, 0)` which for an elevation raster brings all seas to an elevation
+#'   of zero. For using IsoriX for marine organisms, you should use `c(0, Inf)`
+#'   instead.
+#' @param verbose A *logical* indicating whether information about the progress
+#'   of the procedure should be displayed or not while the function is running.
+#'   By default verbose is `TRUE` if users use an interactive R session, and
+#'   `FALSE` otherwise.
+#' @return The prepared structural raster of class *RasterLayer*
 #' @note Aggregating the raster may lead to different results for the
-#' assignment, because the values of raster cells changes depending on the
-#' aggregation function (see example below), which in turn affects model
-#' predictions.
-#' @seealso \code{\link{ElevRasterDE}} for information on elevation rasters, which
-#' can be used as structural rasters.
+#'   assignment, because the values of raster cells changes depending on the
+#'   aggregation function (see example below), which in turn affects model
+#'   predictions.
+#' @seealso [ElevRasterDE] for information on elevation rasters, which can be
+#'   used as structural rasters.
 #' 
 #' @keywords utilities
 #' @examples
@@ -131,7 +132,7 @@
 #' extent(PacificA) # note that the extent has changed!
 #' 
 #' ## We plot (note the use of the function shift()!)
-#' levelplot(PacificA, margin = FALSE, colorkey = FALSE, col = "blue") +
+#' levelplot(PacificA, margin = FALSE, colorkey = FALSE) +
 #'   layer(sp.polygons(CountryBorders, fill = "black")) +
 #'   layer(sp.polygons(shift(CountryBorders, dx = 360), fill = "black"))
 #' 
@@ -144,12 +145,13 @@ prepraster <- function(raster,
                        aggregation_factor = 0L,
                        aggregation_fn = mean,
                        manual_crop = NULL,
+                       values_to_zero = c(-Inf, 0),
                        verbose = interactive()
                        ) {
 
   time <- system.time({
     if (!is.null(isofit)) {  ## test if cropping is needed
-      if (any(class(isofit) %in% "multiisofit")) {
+      if (inherits(isofit, "multiisofit")) {
         isofit <- isofit$multi.fits[[1]]
         }
       if (!is.null(manual_crop)) stop("cannot crop both according to sources and manually! Make up your choice.")
@@ -162,19 +164,18 @@ prepraster <- function(raster,
           ) {
         warning("the cropping may not make sense (sources located outside structural raster)")
       }
+      if (length(values_to_zero) != 2) stop("the argument 'values_to_zero' must contain two values, use 'values_to_zero = c(0, 0)' if you want to prevent the transformation of any value to 0.")
       if (verbose) {
         print(paste("cropping..."))
       }
       
       ## crop is performed:
-      margin_long <- (max(isofit$mean_fit$data$long) - min(isofit$mean_fit$data$long)) * margin_pct/100
-      margin_lat <- (max(isofit$mean_fit$data$lat) - min(isofit$mean_fit$data$lat)) * margin_pct/100
-      
-      raster <- raster::crop(raster,
-                               raster::extent(min(isofit$mean_fit$data$long) - margin_long,
-                                              max(isofit$mean_fit$data$long) + margin_long,
-                                              min(isofit$mean_fit$data$lat) - margin_lat,
-                                              max(isofit$mean_fit$data$lat) + margin_lat))
+      raster <- .crop_withmargin(raster,
+                                 xmin = min(isofit$mean_fit$data$long),
+                                 xmax = max(isofit$mean_fit$data$long),
+                                 ymin =  min(isofit$mean_fit$data$lat),
+                                 ymax = max(isofit$mean_fit$data$lat),
+                                 margin_pct = margin_pct)
     } else {
       if (length(manual_crop) == 4) {
         
@@ -205,6 +206,9 @@ prepraster <- function(raster,
       raster <- raster::aggregate(raster, fact = aggregation_factor, fun = aggregation_fn)  ## aggregation
     }
   })
+
+  ## applies values_to_zero transformation
+  raster::values(raster) <- ifelse(raster::values(raster) < max(values_to_zero) & raster::values(raster) > min(values_to_zero), 0, raster::values(raster))
 
   ## store the raster in memory if possible
   if (raster::canProcessInMemory(raster)) {

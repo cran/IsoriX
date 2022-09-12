@@ -1,138 +1,168 @@
 #' Plotting functions for IsoriX
 #'
-#' These functions plot objects created by \pkg{\link{IsoriX}} (with the
-#' exception of plot method for RasterLayer created using \pkg{\link{raster}}).
+#' These functions plot objects created by IsoriX (with the exception of plot
+#' method for RasterLayer created using [raster].
 #'
-#' When called upon an object of class \var{ISOFIT}, the plot function draws
-#' diagnostic information for the fits of the isoscape geostatistical model.
 #'
-#' When called upon an object of class \var{CALIBFIT}, the plot function draws
-#' the fitted calibration function.
+#' **General**
+#' 
+#' When called upon an object of class *ISOFIT*, the plot function
+#' draws diagnostic information for the fits of the isoscape geostatistical
+#' model.
 #'
-#' When called upon an object of class \var{ISOSCAPE}, the plot function draws a
+#' When called upon an object of class *CALIBFIT*, the plot function draws the
+#' fitted calibration function.
+#'
+#' When called upon an object of class *ISOSCAPE*, the plot function draws a
 #' fine-tuned plot of the isoscape.
-#' 
-#' When called upon an object of class \var{RasterLayer}, the plot function 
-#' displays the raster (just for checking things fast and dirty).
 #'
+#' When called upon an object of class *RasterLayer*, the plot function displays
+#' the raster (just for checking things fast and dirty). In this case, the
+#' function is a simple shortcut to [rasterVis::levelplot].
+#'
+#'
+#' **Plotting isoscapes**
+#' 
 #' When used on a fitted isoscape, the user can choose between plotting the
-#' predictions (\code{which} = "mean"; default), the prediction variance
-#' (\code{which} = "mean_predVar"), the residual variance (\code{which} =
-#' "mean_residVar"), or the response variance (\code{which} = "mean_respVar")
-#' for the mean model; or the corresponding information for the residual
-#' dispersion variance model ("disp", "disp_predVar", "disp_residVar", or
-#' "disp_respVar").
+#' predictions (`which = "mean"`; default), the prediction variance (`which =
+#' "mean_predVar"`), the residual variance (`which = "mean_residVar"`), or the
+#' response variance (`which = "mean_respVar"`) for the mean model; or the
+#' corresponding information for the residual dispersion variance model
+#' (`"disp"`, `"disp_predVar"`, `"disp_residVar"`, or `"disp_respVar"`).
 #'
-#' When used on a simulated isoscape produced with the function
-#' \code{\link{isosim}}, the user can choose between plotting the mean isotopic
-#' value (\code{which} = "mean") or the residual dispersion (\code{which} =
-#' "disp").
+#' When used on a simulated isoscape produced with the function `isosim`
+#' (currently dropped due to the package RandomFields being temporarily retired
+#' from CRAN), the user can choose between plotting the mean isotopic value
+#' (`which = "mean"`) or the residual dispersion (`which = "disp"`).
 #'
-#' When called upon an object of class \var{ISOFIND}, the plot function draws a
-#' fine-tuned plot of the assignment. You can use the argument \code{who} to
-#' choose between plotting the assignment for the group or for some individuals
-#' (check the online tutorial for examples).
-#'
-#' The argument y_title can be used to customise the title of isoscapes. The
-#' element \code{which} is a logical indicating if the name of the layer should
-#' be displayed or not. The element \code{title} is a string or a call used to
-#' define the rest of the title. By default it draws the delta value for
-#' hydrogen. Check the syntax of this default before trying to modify it.
-#'
-#' The arguments \code{cutoff}, \code{sources}, \code{calibs}, \code{assigns}, \code{borders},
-#' \code{mask}, and \code{mask2} are used to fine-tune additional layers that
-#' can be added to the main plot to embellish it. These arguments must be lists
-#' that provide details on how to draw, respectively, the area outside the
-#' prediction interval (for assignment plots), the locations of sources (for
-#' both isoscape and assignment plots), the locations of the calibration
-#' samples (for assignment plots), the locations of the assignment
-#' samples (for assignment plots), the borders (for both types of plots),
-#' and the mask (again, for both). For assignment maps, an extra mask can be
-#' used (mask2), as one may want to add a mask covering the area outside the
-#' biological range of the species. Within these lists, the elements \code{lwd},
-#' \code{col}, \code{cex}, \code{pch} and \code{fill} influences their
-#' respective objects as in traditional R plotting functions (see
-#' \code{\link{par}} for details). The element \code{draw} should be a
-#' \var{logical} that indicates whether the layer must be created or not. The
-#' argument \code{borders} (within the list borders) expects an object of the
-#' class \var{SpatialPolygons} such as the object \code{\link{CountryBorders}}
-#' provided with this package. The argument \code{mask} (within the list maks)
-#' expects an object of the class \var{SpatialPolygons} such as the object
-#' \code{\link{OceanMask}} provided with this package (see examples).
-#'
-#' The argument \code{palette} is used to define how to colour the isoscape and
-#' assignment plot. Within this list, \code{step} defines the number of units on
-#' the z-scale that shares a given colour; \code{range} can be used to constrain
-#' the minimum and/or maximum values to be drawn (e.g. range = c(0, 1)) (this
-#' latter argument is useful if one wants to create several plots with the same
-#' z-scale); \code{n_labels} allows for the user to approximatively define the
-#' maximum number of numbers plotted on the z-scale; \code{digits} defines the
-#' number of digits displayed for the numbers used as labels; and \code{fn} is
-#' used to specify the function that is used to sample the colours. If \code{fn}
-#' is NULL (default) the palette functions derived from
-#' \code{\link{isopalette1}} and \code{\link{isopalette2}} are used when plotting
-#' isoscape and assignments, respectivelly. If \code{fn} is NA the function used
-#' is the palette \code{\link[viridisLite]{viridis}}.
-#'
-#' When called upon an object of class \var{RasterLayer}, the plot function is a
-#' simple shortcut to \code{\link[rasterVis:levelplot-methods]{levelplot}}.
 #' 
+#' **Plotting assignments**
+#' 
+#' When called upon an object of class *ISOFIND*, the plot function draws a
+#' fine-tuned plot of the assignment. You can use the argument `who` to choose
+#' between plotting the assignment for the group or for some individuals (check
+#' the [online tutorial](https://bookdown.org/content/782/) for examples).
+#'
+#'
+#' **Info on parameters influencing the rendering of maps**
+#' 
+#' The argument `y_title` is a list that can be tweaked to customise the title
+#' of isoscapes. Within this list, the element `which` is a logical indicating
+#' if the name of the layer should be displayed or not. The element `title` is a
+#' string or a call used to define the rest of the title. By default it draws
+#' the delta value for hydrogen. Check the syntax of this default before trying
+#' to modify it.
+#'
+#' The arguments `cutoff`, `sources`, `calibs`, `assigns`, `borders`, `mask`,
+#' and `mask2` are used to fine-tune additional layers that can be added to the
+#' main plot to embellish it. These arguments must be lists that provide details
+#' on how to draw, respectively, the area outside the prediction interval (for
+#' assignment plots), the locations of sources (for both isoscape and assignment
+#' plots), the locations of the calibration samples (for assignment plots), the
+#' locations of the assignment samples (for assignment plots), the borders (for
+#' both types of plots), and the mask (again, for both). For assignment maps, an
+#' extra mask can be used (mask2), as one may want to add a mask covering the
+#' area outside the biological range of the species. Within these lists, the
+#' elements `lwd`, `col`, `cex`, `pch` and `fill` influences their respective
+#' objects as in traditional R plotting functions (see [par] for details). The
+#' element `draw` should be a *logical* that indicates whether the layer must be
+#' created or not. The argument `borders` (within the list borders) expects an
+#' object of the class *SpatialPolygons* such as the object [CountryBorders]
+#' provided with this package. The argument `mask` (within the list mask)
+#' expects an object of the class *SpatialPolygons* such as the object
+#' [OceanMask] provided with this package (see examples).
+#'
+#' The argument `palette` is used to define how to colour the isoscape and
+#' assignment plot. Within this list, `step` defines the number of units on the
+#' z-scale that shares a given colour; `range` can be used to constrain the
+#' minimum and/or maximum values to be drawn (e.g. range = c(0, 1)) (this latter
+#' argument is useful if one wants to create several plots with the same
+#' z-scale); `n_labels` allows for the user to approximatively define the
+#' maximum number of numbers plotted on the z-scale; `digits` defines the number
+#' of digits displayed for the numbers used as labels; and `fn` is used to
+#' specify the function that is used to sample the colours. If `fn` is NULL
+#' (default) the palette functions derived from [isopalette1] and [isopalette2]
+#' are used when plotting isoscape and assignments, respectively. If `fn` is NA
+#' the function used is the palette [viridisLite::viridis].
+#'
+#' **Default symbols used on maps**
+#' 
+#' Under the default settings, we chose to 
+#' represent:
+#'    - the source data by little red triangles.
+#'    - the calibration data by little blue crosses.
+#'    - the locations where the samples to assign were collected by white
+#'    diamonds.
+#'    
+#' These symbols can be changed as explained above.
+#'
 #' @name plots
-#' @aliases plot.ISOFIT plot.ISOSCAPE plot.CALIBFIT plot.ISOFIND plot.RasterLayer plot
-#' @param x The return object of an \code{\link{isofit}},
-#'   \code{\link{isoscape}}, \code{\link{calibfit}}, \code{\link{isofind}}, or \code{\link[raster]{raster}}
-#'   call
-#' @param cex_scale A \var{numeric} giving a scaling factor for the points in
+#' @aliases plot.ISOFIT plot.ISOSCAPE plot.CALIBFIT plot.ISOFIND
+#'   plot.RasterLayer plot
+#' @param x The return object of a call to [isofit], [isoscape], [calibfit],
+#'   [isofind], or [raster::raster]]
+#' @param cex_scale A *numeric* giving a scaling factor for the points in
 #'   the plots
-#' @param which A \var{string} indicating the name of the raster to be plotted
+#' @param which A *string* indicating the name of the raster to be plotted
 #'   (see details)
-#' @param y_title A \var{list} containing information for the display of the
+#' @param y_title A *list* containing information for the display of the
 #'   title (see details)
 #' @param who Either "group", or a vector of indices (e.g. 1:3) or names of the
 #'   individuals (e.g. c("Mbe_1", "Mbe_3")) to be considered in assignment plots
-#' @param cutoff A \var{list} containing information for the display of the
+#' @param cutoff A *list* containing information for the display of the
 #'   region outside the prediction interval (see details)
-#' @param sources A \var{list} containing information for the display of the
+#' @param sources A *list* containing information for the display of the
 #'   location of the sources (see details)
-#' @param calibs A \var{list} containing information for the display of the
+#' @param calibs A *list* containing information for the display of the
 #'   location of the calibration sampling location (see details)
-#' @param assigns A \var{list} containing information for the display of the
+#' @param assigns A *list* containing information for the display of the
 #'   location of the assingment sampling location (see details)
-#' @param borders A \var{list} containing information for the display of borders
+#' @param borders A *list* containing information for the display of borders
 #'   (e.g. country borders) (see details)
-#' @param mask A \var{list} containing information for the display of a mask
+#' @param mask A *list* containing information for the display of a mask
 #'   (e.g. an ocean mask) (see details)
-#' @param mask2 A \var{list} containing information for the display of a mask
+#' @param mask2 A *list* containing information for the display of a mask
 #'   (e.g. a distribution mask) (see details)
-#' @param palette A \var{list} containing information for the display of the
+#' @param palette A *list* containing information for the display of the
 #'   colours for the isoscape (see details)
-#' @param plot A \var{logical} indicating whether the plot shall be plotted or
+#' @param plot A *logical* indicating whether the plot shall be plotted or
 #'   just returned
-#' @param sphere A \var{list} containing information whether the raster should be 
-#'   returned as a rotating sphere and if the image created during the process 
-#'   should be saved in your current working directory. The default settings are
-#'    FALSE.
-#' @param xlab A \var{string} the x-axis label in plot.CALIBFIT
-#' @param ylab A \var{string} the y-axis label in plot.CALIBFIT
-#' @param ylim A range defining the extreme coordinates for the the y-axis in plot.CALIBFIT
-#' @param pch The argument pch as in \code{\link{par}} for plot.CALIBFIT and points.CALIBFIT
-#' @param col The argument col as in \code{\link{par}} for plot.CALIBFIT and points.CALIBFIT
-#' @param CI A \var{list} containing two elements: \code{show}, a \var{logical} indicating whether to show the confidence interval or not;
-#' and \code{col}, a \var{string} or \var{integer} indicating the colour for plotting the confidence interval
-#' @param ... Additional arguments (only in use in plot.CALIBFIT and 
-#' plot.RasterLayer)
+#' @param sphere A *list* containing information whether the raster should
+#'   be returned as a rotating sphere and if the image created during the
+#'   process should be saved in your current working directory. The default
+#'   settings are FALSE.
+#' @param xlab A *string* the x-axis label in plot.CALIBFIT
+#' @param ylab A *string* the y-axis label in plot.CALIBFIT
+#' @param xlim A range defining the extreme coordinates for the the x-axis in
+#'   plot.CALIBFIT
+#' @param ylim A range defining the extreme coordinates for the the y-axis in
+#'   plot.CALIBFIT
+#' @param pch The argument pch as in [par] for plot.CALIBFIT and
+#'   points.CALIBFIT
+#' @param col The argument col as in [par] for plot.CALIBFIT and
+#'   points.CALIBFIT
+#' @param line A *list* containing two elements: `show`, a
+#'   *logical* indicating whether to show the regression line or not; and
+#'   `col`, a *string* or *integer* indicating the colour for
+#'   plotting the regression line
+#' @param CI A *list* containing two elements: `show`, a *logical*
+#'   indicating whether to show the confidence interval or not; and `col`,
+#'   a *string* or *integer* indicating the colour for plotting the
+#'   confidence interval
+#' @param ... Additional arguments (only in use in plot.CALIBFIT and
+#'   plot.RasterLayer)
 #'
-#' @seealso \code{\link{isofit}} for the function fitting the isoscape
+#' @seealso [isofit] for the function fitting the isoscape
 #'
-#'   \code{\link{isoscape}} for the function building the isoscape
+#'   [isoscape] for the function building the isoscape
 #'
-#'   \code{\link{calibfit}} for the function fitting the calibration function
+#'   [calibfit] for the function fitting the calibration function
 #'
-#'   \code{\link{isofind}} for the function performing the assignment
+#'   [isofind] for the function performing the assignment
 #'
 #' @keywords plot
 #' @examples ## See ?isoscape or ?isofind for examples
-#'
+#' 
 NULL
 
 #' @rdname plots
@@ -148,7 +178,7 @@ plot.ISOSCAPE <- function(x,
                           sphere  = list(build = FALSE, keep_image = FALSE),
                           ... ## we cannot remove the dots because of the S3 export...
                           ) {
-    if (!(any(class(x) %in% "ISOSCAPE"))) {
+    if (!inherits(x, "ISOSCAPE")) {
       stop("This function must be called on an object of class ISOSCAPE.")
     }
   
@@ -172,7 +202,7 @@ plot.ISOSCAPE <- function(x,
     }
 
     ## importing ocean if missing
-    if (!is.null(mask$mask) && class(mask$mask) != "SpatialPolygons" && is.na(mask$mask)) {
+    if (!is.null(mask$mask) && !inherits(mask$mask, "SpatialPolygons") && is.na(mask$mask)) {
       OceanMask <- NULL
       utils::data("OceanMask", envir = environment(), package = "IsoriX")
       mask$mask <- OceanMask
@@ -334,7 +364,7 @@ plot.ISOFIND <- function(x,
   
   what <- "pv" ## ToDo: implement other possibilities
   
-  if (!(any(class(x) %in% "ISOFIND"))) {
+  if (!inherits(x, "ISOFIND")) {
     stop("This function must be called on an object of class ISOFIND")
   }
   
@@ -356,20 +386,25 @@ plot.ISOFIND <- function(x,
   }
 
   ## importing ocean if missing
-  if (!is.null(mask$mask) && class(mask$mask) != "SpatialPolygons" && is.na(mask$mask)) {
+  if (!is.null(mask$mask) && !inherits(mask$mask, "SpatialPolygons") && is.na(mask$mask)) {
     OceanMask <- NULL
     utils::data("OceanMask", envir = environment(), package = "IsoriX")
     mask$mask <- OceanMask
   }
 
   ## changing missing setting for mask2
-  if (!is.null(mask2$mask) && class(mask2$mask) != "SpatialPolygons" && is.na(mask2$mask)) {
+  if (!is.null(mask2$mask) && !inherits(mask2$mask, "SpatialPolygons") && is.na(mask2$mask)) {
     mask2$mask <- NULL
   }
 
   ## changing cutoff level to null when we don't want to draw the cutoff
   if (what != "pv" | !cutoff$draw) {
     cutoff$level <- 0
+  }
+  
+  ## changing who when sample is size one
+  if ("group" %in% who && length(names(x$sample[[what]])) == 1) {
+    who <- names(x$sample[[what]])
   }
 
   ## create the main plot(s)
@@ -462,10 +497,15 @@ plot.ISOFIND <- function(x,
     ## send plot to graphic device
     print(complete_map)
   }
-  
+
   ## build the 3D-Sphere
   if (sphere$build) {
-    .build_sphere(x[[who]][[what]], colours = colours, decor = decor)
+    if (raster::nlayers(stack_noNAs) > 1) {
+      message("You requested a sphere but you requested several assignment maps.
+In this case, only the first assignment will be drawn on a sphere.
+If you want to build several spheres, build them one by one and do request a single assignment each time.")
+    }
+    .build_sphere(stack_noNAs[[1]], colours = colours, decor = decor)
     if (!sphere$keep_image) {
       file.remove("IsoriX_world_image.png")
     }
@@ -554,14 +594,14 @@ plot.ISOFIND <- function(x,
 #' @export
 plot.ISOFIT <- function(x, cex_scale = 0.2, ...) {
 
-  if (!(any(class(x) %in% "ISOFIT"))) {
+  if (!inherits(x, "ISOFIT")) {
     stop("This function must be called on an object of class ISOFIT.")
   }
   
   ## Test if RStudio is in use
   RStudio <- .Platform$GUI == "RStudio"
 
-  if (!any(class(x) %in% "MULTIISOFIT")) {
+  if (!inherits(x, "MULTIISOFIT")) {
     ## Determine number of plots in panel
     if (RStudio) {
       nplot <- 1
@@ -626,22 +666,36 @@ plot.ISOFIT <- function(x, cex_scale = 0.2, ...) {
 }
 
 
-.plot_Matern <- function(model, limit = 0.5, ...) {
+.plot_Matern <- function(model, limit = 0.01, ...) {
   ## This function should not be called by the user.
   ## It plots the Matern autocorrelation.
-  d_stop <- FALSE
-  d <- 0
-
   rho <- spaMM::get_ranPars(model, which = "corrPars")[[1]]$rho
   nu  <- spaMM::get_ranPars(model, which = "corrPars")[[1]]$nu
-  
+
+  d_stop <- FALSE
+  d <- 0
+    
   while ((d < 50000) & !d_stop) {
     d <- d + 10
     m <- spaMM::MaternCorr(d = d, rho = rho, nu = nu)
-    if (m < limit) d.stop <- TRUE
+    if (m < limit) d_stop <- TRUE
   }
   
   distances <- seq(0, d, 1)
+  
+  if (length(distances) < 30) {
+    
+    d_stop <- FALSE
+    d <- 0
+    
+    while ((d < 30) & !d_stop) {
+      d <- d + 1
+      m <- spaMM::MaternCorr(d = d, rho = rho, nu = nu)
+      if (m < limit) d_stop <- TRUE
+    }
+    
+    distances <- seq(0, d, 0.1)
+  }
   
   m <- spaMM::MaternCorr(d = distances, rho = rho, nu = nu)
 
@@ -661,16 +715,18 @@ plot.ISOFIT <- function(x, cex_scale = 0.2, ...) {
 plot.CALIBFIT <- function(x,
                           pch = 1,
                           col = "black",
-                          xlab = "Predicted isotopic value in the environment",
+                          xlab = "Isotopic value in the environment",
                           ylab = "Isotopic value in the calibration sample",
+                          xlim = NULL,
                           ylim = NULL,
+                          line = list(show = TRUE, col = "blue"),
                           CI = list(show = TRUE, col = "blue"),
+                          plot = TRUE,
                           ...) {
-  
+
   .complete_args(plot.CALIBFIT)
 
-  plotting_calibfit(x = x, pch = pch, col = col, CI = CI, xlab = xlab, ylab = ylab, ylim = ylim, points = FALSE, ...)
-  return(invisible(NULL))
+  plotting_calibfit(x = x, pch = pch, col = col, line = line, CI = CI, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, points = FALSE, plot = plot, ...)
 }
 
 
@@ -679,52 +735,83 @@ plot.CALIBFIT <- function(x,
 points.CALIBFIT <- function(x,
                             pch = 2,
                             col = "red",
+                            line = list(show = TRUE, col = "red"),
                             CI = list(show = TRUE, col = "red"),
+                            plot = TRUE,
                             ...) {
   .complete_args(points.CALIBFIT)
   
-  plotting_calibfit(x = x, pch = pch, col = col, CI = CI, xlab = NULL, ylab = NULL, points = TRUE, ...)
-  return(invisible(NULL))
-  
+  plotting_calibfit(x = x, pch = pch, col = col, line = line, CI = CI, xlab = NULL, ylab = NULL, points = TRUE, plot = plot, ...)
 }
 
-plotting_calibfit <- function(x, pch, col, CI, xlab, ylab, ylim = NULL, points = FALSE, ...) {
+plotting_calibfit <- function(x, pch, col, line, CI, xlab, ylab, xlim = NULL, ylim = NULL, points = FALSE, plot = TRUE, ...) {
 
-  if (!(any(class(x) %in% "CALIBFIT"))) {
+  if (!inherits(x, "CALIBFIT")) {
     stop("This function must be called on an object of class CALIBFIT.")
   }
   
-  if (CI$show) {
-    xs <- with(x$data,
-               seq(min(mean_source_value),
-                   max(mean_source_value),
-                   length = 100
-               )
-    )
-    
-    X <- cbind(1, xs)
-    fitted <- X %*% x$param
-    fixedVar <- rowSums(X * (X %*% x$fixefCov)) ## = diag(X %*% x$fixefCov %*% t(X))
-    if (any(fixedVar < 0)) {
-      fixedVar[fixedVar < 0] <- 0
-      warning("Some negative estimates of variances are considered null. Negative estimates of variances are a sign that numerical problems occured during the fitting of the calibration.")
+  if (x$method == "desk" && !points && (is.null(xlim) || is.null(ylim))) {
+    stop("Since no calibration points have been loaded, xlim & ylim must be defined to indicate the range of the x- and y-axes. Call again the plotting function again after adding e.g. xlim = c(-100, 0), ylim = c(-45, -15) in the function call.")
+  }
+  
+  if (x$method == "desk" && points && is.null(xlim) && is.null(ylim)) {
+    xlim <- ylim <- c(-1e6, 1e6)
+  }
+  
+  x_var <- switch(x$method,
+                  wild = x$data$mean_source_value,
+                  lab = x$data$source_value,
+                  desk = xlim)
+  
+  y_var <- switch(x$method,
+                  wild = x$data$sample_value,
+                  lab = x$data$sample_value,
+                  desk = ylim)
+
+  ## prepare design matrix
+  xs <- with(x$data,
+             seq(min(x_var),
+                 max(x_var),
+                 length = 100
+             )
+  )
+  X <- cbind(1, xs)
+  
+  ## compute fitted values (in all case so as to return them even if not displayed)
+  fitted <- X %*% x$param
+
+  ## compute CI (in all case so as to return it even if not displayed)
+  fixedVar <- rowSums(X * (X %*% x$fixefCov)) ## = diag(X %*% x$fixefCov %*% t(X))
+  if (any(fixedVar < 0)) {
+    fixedVar[fixedVar < 0] <- 0
+    warning("Some negative estimates of variances are considered null. Negative estimates of variances are a sign that numerical problems occured during the fitting of the calibration.")
+  }
+  lwr <- fitted + stats::qnorm(0.025)*sqrt(fixedVar)
+  upr <- fitted + stats::qnorm(0.975)*sqrt(fixedVar)
+
+  if (is.null(xlim)) {
+    xlim <- range(x_var, na.rm = TRUE)
+  }
+  
+  if (is.null(ylim)) {
+    if (CI$show) {
+      ylim <- range(lwr, y_var, upr, na.rm = TRUE)
+    } else {
+      ylim <- range(y_var, na.rm = TRUE)
     }
-    lwr <- fitted + stats::qnorm(0.025)*sqrt(fixedVar)
-    upr <- fitted + stats::qnorm(0.975)*sqrt(fixedVar)
-  } else {
-    lwr <- min(x$data$sample_value, na.rm = TRUE)
-    upr <- max(x$data$sample_value, na.rm = TRUE)
   }
   
-  if(is.null(ylim)) {
-    ylim <- range(lwr, x$data$sample_value, upr, na.rm = TRUE)
+  ## remove fake points used for the construction of the plot when using calibration method "desk"
+  if (x$method == "desk") {
+    col <- NULL
   }
   
-  if (! points) {
+  if (!points && plot) {
   with(x$data,
-       graphics::plot.default(sample_value ~ mean_source_value,
+       graphics::plot.default(y_var ~ x_var,
                               xlab = xlab,
                               ylab = ylab,
+                              xlim = xlim,
                               ylim = ylim,
                               las = 1,
                               pch = pch,
@@ -732,22 +819,30 @@ plotting_calibfit <- function(x, pch, col, CI, xlab, ylab, ylim = NULL, points =
                               ...
        )
   )
-  } else {
+  } else if (plot) {
     with(x$data,
-         graphics::points.default(sample_value ~ mean_source_value, pch = pch, col = col, ...)
+         graphics::points.default(y_var ~ x_var, pch = pch, col = col, ...)
     )
   }
   
-  
-  if (CI$show) {
-    graphics::points(fitted ~ xs, type = "l", col = CI$col, lwd = 2)
-    graphics::points(lwr ~ xs, col = CI$col, lty = 2, type = "l")
-    graphics::points(upr ~ xs, col = CI$col, lty = 2, type = "l")
-    ## tweak to please codetools::checkUsagePackage('IsoriX', skipWith = TRUE)
-    rm(fitted, fixedVar)
+  ## plot regression line
+  if (line$show && plot) {
+    graphics::points(fitted ~ xs, col = line$col, lwd = 2, type = "l")
   }
   
-  return(invisible(NULL))
+  ## plot CI
+  if (CI$show && plot) {
+    graphics::points(lwr ~ xs, col = CI$col, lty = 2, type = "l")
+    graphics::points(upr ~ xs, col = CI$col, lty = 2, type = "l")
+  }
+  
+  ## return for plots outside IsoriX
+  out <- data.frame(source_value = xs, sample_fitted = fitted, sample_lwr = lwr, sample_upr = upr)
+  
+  ## tweak to please codetools::checkUsagePackage('IsoriX', skipWith = TRUE)
+  rm(fitted, fixedVar)
+  
+  return(invisible(out))
   }
 
 

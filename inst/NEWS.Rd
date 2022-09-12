@@ -12,6 +12,47 @@
   }
 }
 
+\section{version 0.8.3}{
+  \subsection{New features}{
+    \itemize{
+      \item the function `calibfit()` gains an argument method that allows for selecting one of four calibration methods ("wild", "lab", "desk", "desk_inverse"). This allows for users to use 1) calibration samples associated with unknown environmental isotopic values, 2) calibration samples associated with known environmental isotopic values, or 3 & 4) the intercept and slope of a calibration relationship computed by others (e.g. values found in a paper). Note: the desk* methods allow for the consideration of a fractionaction factor too (i.e. slope = 0). See \code{calibfit} for details. (#20 & #142)
+      \item the function `getelev()` has been completely rewriten so as to rely on the package **elevatr** to download elevation data. You should check `?getelev` for learning how to use the new version of the function, but we retained the core principle of the previous function so that old workflow will only require minor adjustements. The new version still saves a *.tif file on the disk, albeit uing a different file name to avoid (data) confusion. (#140 & #107)
+      \item the function `isofind()` gains an argument `neglect_covPredCalib` that allows for the computation of a covariance term that was so far neglected in IsoriX. See `?isofind` for details. (#143)
+      \item the function `prepraster()` gains an argument `values_to_zero` to turn a range of elevation values to zeros (nullify negative elevation values by default). This is particular useful because the new version of `get_elev()` download an elevation raster that includes bathymetry.
+      \item new internal function `.invert_reg()` to invert regression (used for method "desk_inverse" in `calibfit()`)
+      }
+  }
+  \subsection{Minor change}{
+    \itemize{
+      \item when calling `plot()` on an object created with `calibfit()`, the plotting function now returns the fitted values and CI for users to be able to make alternative plots (#44)
+      \item new argument `xlim` for the plotting function for calibration fits
+      \item new argument `line` for customising how to plot the regression line in calibration fits
+      \item the summary method for calibration fits now displays the residual variance
+      \item `calibfit()` performs more check on extrapolation (#119)
+      \item when using `plot()` on an object of class ISOFIT, the x-axis for the plot showing the Matern correlation should have a range more adequate irrespective when autocorrelation is strong over short distances (#134)
+      \item documentation for `?plot()` now contains a description of what symbols mean in plots (#138)
+      \item when calling `plot()` on an object created with `isofind()`, the plotting function now detects sample of size 1 and no longer displays "Group" in the title of the assignment plot even if `who` = "group" (#120)
+      \item all functions accepting a `data.frame` as input should also now be compatible when provided with a `tibble` (#118)
+      \item typos have been corrected (#130)
+      \item default y-axis title changed to "Isotopic value in the environment" when plotting calibration fits to be flexible enough irrespective of the methods used in `calibfit()`
+      }
+  }
+  \subsection{Geeky change}{
+    \itemize{
+      \item the argument `long_min`, `long_max`, `lat_min` & `lat_max` function `prepsources()` now have explicit default values and should no longer be missing.
+      \item the version of spaMM required by IsoriX has changed to 3.13 so as to benefit from a new extractor we rely on for the computation of the 4th variance term during assignment (#143)
+      \item the function depending on the package RandomFields are no longer available since that package has been (for now) retired by CRAN :-(
+      \item IsoriX should now work with tibbles as inputs (#118)
+    }
+  }
+  \subsection{Solved BUGS}{
+    \itemize{
+      \item the printing method for the object of class ISOSCAPE was somehow not exported and thus not used (unreported issue)
+      \item plotting on a sphere ISOFIND objects did not work in same cases (#126)
+    }
+  }
+}
+
 \section{version 0.8.2}{
   \subsection{New features}{
     \itemize{
@@ -30,6 +71,7 @@
   \subsection{Minor change}{
     \itemize{
       \item several weblinks had changed and have been updated
+      \item all old defunct functions have been removed from the package
       }
   }
 }
@@ -211,4 +253,3 @@
       }
   }
 }
-

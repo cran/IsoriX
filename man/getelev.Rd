@@ -3,43 +3,94 @@
 \name{getelev}
 \alias{getelev}
 \title{Download an elevation raster from internet}
-\source{
-\url{https://topotools.cr.usgs.gov/gmted_viewer/viewer.htm}
-}
 \usage{
-getelev(path = NULL, overwrite = FALSE, verbose = interactive())
+getelev(
+  file = "~/elevation_world_z5.tif",
+  z = 5,
+  long_min = -180,
+  long_max = 180,
+  lat_min = -90,
+  lat_max = 90,
+  margin_pct = 5,
+  override_size_check = FALSE,
+  overwrite = FALSE,
+  Ncpu = getOption_IsoriX("Ncpu"),
+  verbose = interactive(),
+  ...
+)
 }
 \arguments{
-\item{path}{A \var{string} indicating where to store the file on the hard
-drive (without the file name!)}
+\item{file}{A \emph{string} indicating where to store the file on the hard
+drive (default = \verb{~/elevation_world_z5.tif})}
 
-\item{overwrite}{A \var{logical} indicating if an existing file should be
+\item{z}{An \emph{integer} between 1 and 14 indicating the resolution of the
+file do be downloaded (1 = lowest, 14 = highest; default = 5)}
+
+\item{long_min}{A \emph{numeric} indicating the minimum longitude to select
+from. Should be a number between -180 and 180 (default = -180).}
+
+\item{long_max}{A \emph{numeric} indicating the maximal longitude to select
+from. Should be a number between -180 and 180 (default = 180).}
+
+\item{lat_min}{A \emph{numeric} indicating the minimum latitude to select
+from. Should be a number between -90 and 90 (default = -90).}
+
+\item{lat_max}{A \emph{numeric} indicating the maximal latitude to select
+from (default = 90).}
+
+\item{margin_pct}{The percentage representing by how much the area should
+extend outside the area used for cropping (default = 5, corresponding to
+5\%). Set to 0 if you want exact cropping.}
+
+\item{override_size_check}{A \emph{logical} indicating whether or not to
+override size checks (default = \code{FALSE})}
+
+\item{overwrite}{A \emph{logical} indicating if an existing file should be
 re-downloaded}
 
-\item{verbose}{A \var{logical} indicating whether information about the
+\item{Ncpu}{An \emph{integer} specifying the number of CPU's to use when downloading AWS tiles (default set by global package options).}
+
+\item{verbose}{A \emph{logical} indicating whether information about the
 progress of the procedure should be displayed or not while the function is
 running. By default verbose is \code{TRUE} if users use an interactive R
-session and \code{FALSE} otherwise. If a \var{numeric} is provided instead,
-additional information about the download will be provided if the number is
-greater than 1.}
+session and \code{FALSE} otherwise.}
+
+\item{...}{Other parameters to be passed to the function
+\link[elevatr:get_elev_raster]{elevatr::get_elev_raster}}
+}
+\value{
+This function returns the full path where the file has been stored
 }
 \description{
-The function \code{getelev} allows for the download of an elevation raster
-from internet. It downloads the "Global Multi-resolution Terrain Elevation
-Data 2010" from our server. The file was originally downloaded from: \cr
-\url{https://topotools.cr.usgs.gov/gmted_viewer/viewer.htm} \cr and converted into a
-\var{tif} file by us. The function \code{getelev} uses the generic function
-\code{downloadfile} that can also be used to download directly other files.
-This raster needs further processing with the function \code{\link{prepelev}}
-and can then be passed to \code{\link{isoscape}}.
+The function \code{getelev} downloads an elevation raster from internet. It
+is a wrapper that 1) calls the function \link[elevatr:get_elev_raster]{elevatr::get_elev_raster} to
+download the data and 2) saves the downloaded raster on the hard drive (so
+that you don't have to keep downloading the same file over and over again).
+The file saved on the disk is a *.tif file which you can directly read using
+the function \link[raster:raster]{raster::raster}.
 }
 \details{
-If the argument "path" is not provided, the file will be stored in the
-current working directory. The function can create new directories, so you
-can also indicate a new path. If the package \pkg{\link[tools]{tools}} is
-installed, the integrity of the elevation raster is tested after a call to
-\code{\link{getelev}}. In case of corruption, try downloading the file again,
-specifying overwrite = TRUE to overwrite the corrupted file.
+By default (and to keep with the spirit of the former implementations of
+\code{getelev} in IsoriX, which did not rely on \link[elevatr:elevatr]{elevatr::elevatr}), an
+elevation raster of the whole world is downloaded with a resolution
+correspond to ca. 0.6 km2 per raster cell. You can increase the resolution by
+increasing the value of the argument \code{z}. You can also restrict the area
+to be downloaded using the arguments \code{long_min}, \code{long_max}, \code{lat_min} &
+\code{lat_max}.
+
+Note that when using \link{prepraster} you will be able to reduce the resolution
+and restrict the boundaries of this elevation raster, but you won't be able
+to increase the resolution or expend the boundaries. As a consequence, it is
+probably a good idea to overshoot a little when using \code{getelev} and
+download data at a resolution slightly higher than you need and for a extent
+larger than your data.
+
+You can customise further what you download by using other parameters of
+\link[elevatr:get_elev_raster]{elevatr::get_elev_raster} (via the elipsis \code{...}).
+
+Please refer to the documentation of
+\link[elevatr:get_elev_raster]{elevatr::get_elev_raster} for information on the sources and follows link in
+there to know how to cite them.
 }
 \examples{
 

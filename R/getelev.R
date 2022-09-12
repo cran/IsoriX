@@ -1,32 +1,55 @@
 #' Download an elevation raster from internet
 #' 
-#' The function \code{getelev} allows for the download of an elevation raster
-#' from internet. It downloads the "Global Multi-resolution Terrain Elevation
-#' Data 2010" from our server. The file was originally downloaded from: \cr
-#' \url{https://topotools.cr.usgs.gov/gmted_viewer/viewer.htm} \cr and converted into a
-#' \var{tif} file by us. The function \code{getelev} uses the generic function
-#' \code{downloadfile} that can also be used to download directly other files.
-#' This raster needs further processing with the function \code{\link{prepelev}}
-#' and can then be passed to \code{\link{isoscape}}.
+#' The function `getelev` downloads an elevation raster from internet. It
+#' is a wrapper that 1) calls the function [elevatr::get_elev_raster] to
+#' download the data and 2) saves the downloaded raster on the hard drive (so
+#' that you don't have to keep downloading the same file over and over again).
+#' The file saved on the disk is a *.tif file which you can directly read using
+#' the function [raster::raster].
+#'
+#' By default (and to keep with the spirit of the former implementations of
+#' `getelev` in IsoriX, which did not rely on [elevatr::elevatr]), an
+#' elevation raster of the whole world is downloaded with a resolution
+#' correspond to ca. 0.6 km2 per raster cell. You can increase the resolution by
+#' increasing the value of the argument `z`. You can also restrict the area
+#' to be downloaded using the arguments `long_min`, `long_max`, `lat_min` &
+#' `lat_max`.
 #' 
-#' If the argument "path" is not provided, the file will be stored in the
-#' current working directory. The function can create new directories, so you
-#' can also indicate a new path. If the package \pkg{\link[tools]{tools}} is
-#' installed, the integrity of the elevation raster is tested after a call to
-#' \code{\link{getelev}}. In case of corruption, try downloading the file again,
-#' specifying overwrite = TRUE to overwrite the corrupted file.
+#' Note that when using [prepraster] you will be able to reduce the resolution
+#' and restrict the boundaries of this elevation raster, but you won't be able
+#' to increase the resolution or expend the boundaries. As a consequence, it is
+#' probably a good idea to overshoot a little when using `getelev` and
+#' download data at a resolution slightly higher than you need and for a extent
+#' larger than your data.
 #' 
-#' @param path A \var{string} indicating where to store the file on the hard
-#' drive (without the file name!)
-#' @param overwrite A \var{logical} indicating if an existing file should be
-#' re-downloaded
-#' @param verbose A \var{logical} indicating whether information about the
-#' progress of the procedure should be displayed or not while the function is
-#' running. By default verbose is \code{TRUE} if users use an interactive R
-#' session and \code{FALSE} otherwise. If a \var{numeric} is provided instead,
-#' additional information about the download will be provided if the number is
-#' greater than 1.
-#' @source \url{https://topotools.cr.usgs.gov/gmted_viewer/viewer.htm}
+#' You can customise further what you download by using other parameters of
+#' [elevatr::get_elev_raster] (via the elipsis `...`).
+#' 
+#' Please refer to the documentation of
+#' [elevatr::get_elev_raster] for information on the sources and follows link in
+#' there to know how to cite them.
+#' 
+#' @inheritParams prepsources
+#' @param file A *string* indicating where to store the file on the hard
+#'   drive (default = `~/elevation_world_z5.tif`)
+#' @param z An *integer* between 1 and 14 indicating the resolution of the
+#'   file do be downloaded (1 = lowest, 14 = highest; default = 5)
+#' @param margin_pct The percentage representing by how much the area should
+#'   extend outside the area used for cropping (default = 5, corresponding to
+#'   5%). Set to 0 if you want exact cropping.
+#' @param override_size_check A *logical* indicating whether or not to
+#'   override size checks (default = `FALSE`)
+#' @param overwrite A *logical* indicating if an existing file should be
+#'   re-downloaded
+#' @param Ncpu An *integer* specifying the number of CPU's to use when downloading AWS tiles (default set by global package options).
+#' @param verbose A *logical* indicating whether information about the
+#'   progress of the procedure should be displayed or not while the function is
+#'   running. By default verbose is `TRUE` if users use an interactive R
+#'   session and `FALSE` otherwise.
+#' @param ... Other parameters to be passed to the function
+#'   [elevatr::get_elev_raster]
+#'
+#' @return This function returns the full path where the file has been stored
 #' @examples
 #' 
 #' ## To download the high resolution
@@ -35,52 +58,116 @@
 #' ## getelev()
 #' 
 #' @export
-getelev <- function(path = NULL,
+getelev <- function(file = "~/elevation_world_z5.tif",
+                    z = 5,
+                    long_min = -180,
+                    long_max = 180,
+                    lat_min = -90,
+                    lat_max = 90,
+                    margin_pct = 5,
+                    override_size_check = FALSE,
                     overwrite = FALSE,
-                    verbose = interactive()
+                    Ncpu = getOption_IsoriX("Ncpu"),
+                    verbose = interactive(),
+                    ...
                     ) {
 
-  ## Define web address and file name
-  address_elev <- "http://62.141.164.7/download/gmted2010_30mn.tif"
-  filename_elev <- "gmted2010_30mn.tif"
+  ## Turning path into canonical form
+  ## (this avoids the problem of using the wrong slashes and so on)
+  file <- normalizePath(file, mustWork = FALSE)
   
-  ## Define md5sum
-  ## (created with tools::md5sum("gmted2010_30mn.tif"))
-  md5sum_elev <- "9fbbb014e2f27299137bae21be31ac7c" 
+  path <- dirname(file)
   
-  ## Download and check file
-  downloadfile(address = address_elev,
-               filename = filename_elev,
-               path = path,
-               overwrite = overwrite,
-               md5sum = md5sum_elev,
-               verbose = verbose
-               )
-
-  return(invisible(NULL))
+  if (path == ".") {
+    path <- getwd()
+  } else if (!dir.exists(path)) {
+    ## Create directory if missing
+    if (verbose > 0) {
+      print("(the folder you specified does not exist and will therefore be created)", quote = FALSE)
+    }
+    dir.create(path, recursive = TRUE)
+  }
+  
+  ## Applying margin_pct
+  if (margin_pct != 0) {
+    
+    margin_long_extra <- (long_max - long_min) * margin_pct/100
+    margin_lat_extra  <- (lat_max - lat_min) * margin_pct/100
+    
+    if (long_min > -180) {
+      long_min <- max(c(-180, long_min - margin_long_extra))
+    }
+    if (long_max < 180) {
+      long_max <- min(c(180, long_max + margin_long_extra))
+    }
+    if (lat_min > -90) {
+      lat_min <- max(c(-90, lat_min - margin_lat_extra))
+    }
+    if (lat_max < 90) {
+      lat_max <- min(c(90, lat_max + margin_lat_extra))
+    }
+  }
+  
+  ## Conditional file download
+  if (file.exists(file) & !overwrite) {
+    message(paste("the file", basename(file), "is already present in", path,
+                  "so it won't be downloaded again unless you set the argument overwrite to TRUE\n"
+    )
+    )
+  } else {
+  
+    if (verbose) print("Downloading and formating the elevation raster... (be patient)")
+    elev <- elevatr::get_elev_raster(location = data.frame(long = c(long_min, long_max),
+                                                           lat = c(lat_min, lat_max)),
+                                     z = z,
+                                     prj = "+proj=longlat +datum=WGS84 +no_defs",
+                                     clip = "bbox",
+                                     override_size_check = override_size_check,
+                                     ncpu = Ncpu,
+                                     verbose = verbose,
+                                     ...)
+    
+    if (verbose) print("Writing the elevation raster on the disk...")
+    raster::writeRaster(elev, filename = file, overwrite = overwrite)
+    if (verbose) print("Done.")
+  }
+  
+  message("you can load your elevation raster as follows:")
+  message(paste0("elev_raster <- raster::raster('", file, "')"))
+  
+  return(invisible(file))
 }
 
 
 #' Download rasters of monthly precipitation from internet
 #' 
-#' The function \code{getprecip} allows for the download of rasters of monthly
+#' The function `getprecip` allows for the download of rasters of monthly
 #' precipitation from internet. It downloads the "precipitation (mm) WorldClim
-#' Version2" at a spatial resolution of 30 seconds (~1 km2). After download, the
-#' function also unzip the file. The function
-#' \code{getprecip} uses the generic function \code{downloadfile} that can also be
-#' used to download directly other files. This raster needs further processing 
-#' with the function \code{\link{prepcipitate}}. It can then be used to predict 
-#' annual averages precipitation weighted isoscapes with the function \code{\link{isomultiscape}}.
+#' Version 2.1" at a spatial resolution of 30 seconds (~1 km2). After download,
+#' the function also unzip the file. The function `getprecip` uses the
+#' generic function `downloadfile` that can also be used to download
+#' directly other files. This raster needs further processing with the function
+#' [prepcipitate]. It can then be used to predict annual averages
+#' precipitation weighted isoscapes with the function
+#' [isomultiscape].
 #' 
-#' precipitation weighted isoscapes
 #' In the argument "path" is not provided, the file will be stored in the 
 #' current working directory. The functions can create new directories, so you 
 #' can also indicate a new path. The integrity of the elevation raster is tested
-#' after a call to \code{getprecip}. In case of corruption, try downloading the
+#' after a call to `getprecip`. In case of corruption, try downloading the
 #' file again, specifying overwrite = TRUE to overwrite the corrupted file.
 #' 
 #' @inheritParams getelev
-#' @source \url{https://www.worldclim.org/data/worldclim21.html}
+#' @param path A *string* indicating where to store the file on the hard
+#'   drive (without the file name!)
+#' @param verbose A *logical* indicating whether information about the
+#'   progress of the procedure should be displayed or not while the function is
+#'   running. By default verbose is `TRUE` if users use an interactive R
+#'   session and `FALSE` otherwise. If a *numeric* is provided instead,
+#'   additional information about the download will be provided if the number is
+#'   greater than 1.
+#'
+#' @source \url{https://worldclim.org/data/worldclim21.html}
 #' @examples
 #' 
 #' ## To download the monthly precipitation
@@ -95,12 +182,12 @@ getprecip <- function(path = NULL,
                       ) {
   
   ## Define web address and file name
-  address_precip <- "http://biogeo.ucdavis.edu/data/worldclim/v2.0/tif/base/wc2.0_30s_prec.zip"
-  filename_precip <- "wc2.0_30s_prec.zip"
+  address_precip <- "https://biogeo.ucdavis.edu/data/worldclim/v2.1/base/wc2.1_30s_prec.zip"
+  filename_precip <- "wc2.1_30s_prec.zip"
   
   ## Define md5sum
-  ## (created with tools::md5sum("wc2.0_30s_prec.zip"))
-  md5sum_precip <- "afd435222a328efb4ab9487a3fe0b6d4"
+  ## (created with tools::md5sum("wc2.1_30s_prec.zip"))
+  md5sum_precip <- "cc100350d034883c9e925c903fb3c7c3"
   
   ## Download and check file
   path_to_zip <- downloadfile(address = address_precip,
@@ -115,7 +202,7 @@ getprecip <- function(path = NULL,
   if (verbose > 0) {
     print("unzipping in progress...", quote = FALSE)
   }
-  outpath <- paste0(path, "wc2.0_30s_prec")
+  outpath <- paste0(path, "wc2.1_30s_prec")
   utils::unzip(path_to_zip, exdir = outpath)
   
   if (verbose > 0) {
@@ -140,11 +227,18 @@ getprecip <- function(path = NULL,
 #'   [getprecip()].
 #'
 #' @inheritParams getelev
-#' @param address A \var{string} indicating the address of the file on internet
-#' @param filename A \var{string} indicating the name under which the file must
+#' @inheritParams getprecip
+#' @param address A *string* indicating the address of the file on internet
+#' @param filename A *string* indicating the name under which the file must
 #'   be stored
-#' @param md5sum A \var{string} indicating the md5 signature of the valid file
+#' @param md5sum A *string* indicating the md5 signature of the valid file
 #'   as created with [tools::md5sum()]
+#' @param verbose A *logical* indicating whether information about the
+#'   progress of the procedure should be displayed or not while the function is
+#'   running. By default verbose is `TRUE` if users use an interactive R
+#'   session and `FALSE` otherwise. If a *numeric* is provided instead,
+#'   additional information about the download will be provided if the number is
+#'   greater than 1.
 #'
 #' @return The complete path of the downloaded file (invisibly)
 #'
@@ -198,7 +292,7 @@ downloadfile <- function(address = NULL, filename = NULL, path = NULL,
     if (tools::md5sum(complete_path) == md5sum) {
       print("the file seems OK (md5sums do match)", quote = FALSE)
     } else {
-      warning("the file seems to be corructed (md5sums do not match). Try to download it again setting the argument overwrite to TRUE.", quote = FALSE)
+      warning("the file seems to be corructed (md5sums do not match). Try to download it again setting the argument overwrite to TRUE.")
     }
   }
   
