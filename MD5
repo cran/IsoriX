@@ -1,12 +1,12 @@
-72448fbc78897d48ff48da7ba055f8eb *DESCRIPTION
+ba59ef12c6a22a1eeceb200f2c4977eb *DESCRIPTION
 0fdc72eb85f51a2d8a9b3b79a98f1cf4 *NAMESPACE
 73240e801693071b24504b35e8158ade *R/IsoriX-dataset.R
 74e1987d2bbaa4a8a576e27838a533ea *R/IsoriX-package.R
-29a5efbbbf039f5a78968d262cef5846 *R/calibfit.R
+46f6ee5c8d3ea636abb79ea38643a879 *R/calibfit.R
 944c27b95c3c59b0bf27f829430a3101 *R/create_aliens.R
 1b3c6034a6ccf7c1b9536263226bcf30 *R/defunct.R
 fca2a6c10e3e48d817200ad0211c63c1 *R/getelev.R
-b5ec60e8efa3668a233e1f6b36511515 *R/isofind.R
+4f75c44982e7503db4d60afcd6d784c6 *R/isofind.R
 c0adfd7bf758e4b0de92b210606931e7 *R/isofit.R
 a88e78a5f6e98039e553eaaf901be20c *R/isoscape.R
 a039aa80aabdaced22fc954d73d2c19f *R/options.R
@@ -32,7 +32,7 @@ b7d185a703c429c054821e7c2c1deffb *data/PrecipBrickDE.rda
 8d0e13d002068157f2952303e64bfc26 *data/isopalette1.rda
 2cfab84181a7fb13b35ef8b8bb9cbd62 *data/isopalette2.rda
 0040a12df8028fc0c8598a80a627ef97 *inst/CITATION
-df00722d2820e4dbcacfaaa688fa10de *inst/NEWS.Rd
+d85dd0970fd5ba4b2549e456d17e61af *inst/NEWS.Rd
 904534ace18de1df44695c621aff4a21 *man/AssignDataAlien.Rd
 06b7b8bb0bafd81290fac445ab330c43 *man/AssignDataBat.Rd
 0ba686ba19be6999e92c533d28c7e333 *man/AssignDataBat2.Rd
@@ -47,7 +47,7 @@ dc1eb0f7467a48af231aa0d6aff1dfe0 *man/GNIPDataEUagg.Rd
 d76b7df0a69c6a495d14b90ace666bf4 *man/IsoriX-package.Rd
 b529e0a17c2c7dc9d1dd21e344826e4c *man/OceanMask.Rd
 e7a4c76914391eccc079e474ce2088b1 *man/PrecipBrickDE.Rd
-fb5de6fe1aef97801fac149336af623e *man/calibfit.Rd
+b28e7f7f40de94312658542293505b46 *man/calibfit.Rd
 179f10a815ae82c4d97e1bd143d066ef *man/create_aliens.Rd
 0efbb3fca405e2fc5356caf28bc482ac *man/downloadfile.Rd
 aa6aecda8cb74a5e45d07f12e3318443 *man/getelev.Rd

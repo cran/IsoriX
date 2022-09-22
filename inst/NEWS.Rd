@@ -12,6 +12,19 @@
   }
 }
 
+\section{version 0.9}{
+  \subsection{Solved BUGS}{
+    \itemize{
+      \item the previous released introduced an error in how the variance of the assignment test is computed in the absence of calibration (with important consequence in terms of assignments). This is now fixed (#151).
+    }
+  }
+  \subsection{Minor change}{
+    \itemize{
+      \item the base package 'colourspace' is now suggested to avoid a note in R CMD check.
+    }
+  }
+}
+
 \section{version 0.8.3}{
   \subsection{New features}{
     \itemize{
@@ -48,7 +61,7 @@
   \subsection{Solved BUGS}{
     \itemize{
       \item the printing method for the object of class ISOSCAPE was somehow not exported and thus not used (unreported issue)
-      \item plotting on a sphere ISOFIND objects did not work in same cases (#126)
+      \item plotting on a sphere ISOFIND objects did not work in some cases (#126)
     }
   }
 }
