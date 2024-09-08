@@ -1,9 +1,9 @@
 #' Prepare the raster brick containing the precipitation data
 #'
 #' This functions turns the WorldClim data downloaded using the function
-#' [getprecip] into a *RasterBrick* of same resolution and
+#' [`getprecip`] into a *SpatRaster* of same resolution and
 #' extent as the structural raster. This function is designed to be used with
-#' [isomultiscape].
+#' [`isomultiscape`].
 #'
 #' @param path A *string* indicating the path where the WorldClim data have
 #'   been downloaded. If the path is null (the default) the function will assume
@@ -17,11 +17,11 @@
 #'
 #' @seealso
 #'
-#' [getprecip] to download the relevant precipitation data
+#' [`getprecip`] to download the relevant precipitation data
 #'
-#' [PrecipBrickDE] for the stored precipitation data for Germany
+#' [`PrecipBrickDE`] for the stored precipitation data for Germany
 #'
-#' [prepelev] to prepare an elevation raster
+#' [`prepelev`] to prepare an elevation raster
 #'
 #' @examples
 #'
@@ -40,10 +40,11 @@
 #' #                         aggregation_factor = 0)
 #' #
 #' ### We download the precipitation data:
-#' # getprecip(path = "~/Downloads/")
+#' # temp_folder <- tempdir()
+#' # getprecip(path = temp_folder)
 #' #
 #' ### We prepare the raster brick with all the precipitation data:
-#' # PrecipitationBrick <- prepcipitate(path = "~/Downloads/",
+#' # PrecipitationBrick <- prepcipitate(path = temp_folder,
 #' #                                    raster = StrRaster)
 #' #
 #' ### We plot the precipitation data:

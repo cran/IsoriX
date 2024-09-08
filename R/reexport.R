@@ -12,9 +12,9 @@ grid::grid.text
 
 # reexport from lattice:
 
-#' @importFrom lattice panel.points
+#' @importFrom lattice lpolygon
 #' @export
-lattice::panel.points
+lattice::lpolygon
 
 #' @importFrom lattice xyplot
 #' @export
@@ -62,6 +62,14 @@ terra::polys
 #' @importFrom terra rast
 #' @export
 terra::rast
+
+#' @importFrom terra vect
+#' @export
+terra::vect
+
+#' @importFrom terra extract
+#' @export
+terra::extract
 
 #' @importFrom terra crs
 #' @export

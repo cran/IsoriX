@@ -5,7 +5,7 @@
 \alias{reexports}
 \alias{gpar}
 \alias{grid.text}
-\alias{panel.points}
+\alias{lpolygon}
 \alias{xyplot}
 \alias{layer}
 \alias{levelplot}
@@ -15,6 +15,8 @@
 \alias{points}
 \alias{polys}
 \alias{rast}
+\alias{vect}
+\alias{extract}
 \alias{crs}
 \alias{crs<-}
 \alias{ext}
@@ -31,7 +33,7 @@ below to see their documentation.
 \describe{
   \item{grid}{\code{\link[grid]{gpar}}, \code{\link[grid]{grid.text}}}
 
-  \item{lattice}{\code{\link[lattice:llines]{panel.points}}, \code{\link[lattice]{xyplot}}}
+  \item{lattice}{\code{\link[lattice:llines]{lpolygon}}, \code{\link[lattice]{xyplot}}}
 
   \item{latticeExtra}{\code{\link[latticeExtra]{layer}}}
 
@@ -39,6 +41,6 @@ below to see their documentation.
 
   \item{spaMM}{\code{\link[spaMM:get_fittedPars]{get_ranPars}}}
 
-  \item{terra}{\code{\link[terra]{cellSize}}, \code{\link[terra]{crs}}, \code{\link[terra:crs]{crs<-}}, \code{\link[terra]{ext}}, \code{\link[terra:ext]{ext<-}}, \code{\link[terra]{plot}}, \code{\link[terra:lines]{points}}, \code{\link[terra:lines]{polys}}, \code{\link[terra]{rast}}, \code{\link[terra]{shift}}, \code{\link[terra]{values}}}
+  \item{terra}{\code{\link[terra]{cellSize}}, \code{\link[terra]{crs}}, \code{\link[terra:crs]{crs<-}}, \code{\link[terra]{ext}}, \code{\link[terra:ext]{ext<-}}, \code{\link[terra]{extract}}, \code{\link[terra]{plot}}, \code{\link[terra:lines]{points}}, \code{\link[terra:lines]{polys}}, \code{\link[terra]{rast}}, \code{\link[terra]{shift}}, \code{\link[terra]{values}}, \code{\link[terra]{vect}}}
 }}
 

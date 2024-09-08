@@ -1,7 +1,7 @@
 #' Filter and aggregate the raw source dataset
 #'
 #' This function prepares the available dataset to be used for creating the
-#' isoscape (e.g. [GNIPDataDE]). This function allows the trimming of data
+#' isoscape (e.g. [`GNIPDataDE`]). This function allows the trimming of data
 #' by months, years and location, and for the aggregation of selected data per
 #' location, location:month combination or location:year combination. The
 #' function can also be used to randomly exclude some observations.
@@ -10,22 +10,22 @@
 #' aggregation schemes are possible for now. The most simple one, used as
 #' default, aggregates the data so to obtained a single row per sampling
 #' location. Datasets prepared in this way can be readily fitted with the
-#' function [isofit] to build an isoscape. It is also possible to
+#' function [`isofit`] to build an isoscape. It is also possible to
 #' aggregate data in a different way in order to build sub-isoscapes
 #' representing temporal variation in isotope composition, or in order to
 #' produce isoscapes weighted by the amount of precipitation (for isoscapes on
 #' precipitation data only). The two possible options are to either split the
 #' data from each location by month or to split them by year. This is set with
 #' the `split_by` argument of the function. Datasets prepared in this way
-#' should be fitted with the function [isomultifit].
+#' should be fitted with the function [`isomultifit`].
 #'
 #' The function also allows the user to filter the sampling locations based on
 #' time (years and/ or months) and space (locations given in geographic
 #' coordinates, i.e. longitude and latitude) to calculate tailored isoscapes
 #' matching e.g. the time of sampling and speeding up the model fit by
 #' cropping/clipping a certain area. The dataframe produced by this function can
-#' be used as input to fit the isoscape (see [isofit] and
-#' [isomultifit]).
+#' be used as input to fit the isoscape (see [`isofit`] and
+#' [`isomultifit`]).
 #'
 #' @param data A *dataframe* containing raw isotopic measurements of sources
 #' @param month A *numeric vector* indicating the months to select from.
@@ -162,6 +162,32 @@ prepsources <- function(data,
   if (prop_random > 1) {
     stop("The value you entered for prop_random is > 1. It must be a proportion (so between 0 and 1)!")
   }
+
+  ### Check that source_IDs correspond to unique locations
+  data$.location <- paste(data[, col_lat, drop = TRUE], data[, col_long, drop = TRUE], data[, col_elev, drop = TRUE])
+  test_unique_locations1 <- tapply(data$.location, as.character(data[, col_source_ID, drop = TRUE]), \(x) length(unique(x)) == 1)
+  if (!all(test_unique_locations1)) {
+    issues <- names(test_unique_locations1[!test_unique_locations1])
+    warning(c(
+      paste("Different combinations of latitude, longitude and elevation share the same source_ID. Please consider fixing the data for the IDs:\n"),
+      paste(issues, collapse = ", ")
+    ))
+    rm(issues)
+  }
+  test_unique_locations2 <- tapply(as.character(data[, col_source_ID, drop = TRUE]), data$.location, \(x) length(unique(x)) == 1)
+  if (!all(test_unique_locations2)) {
+    issues_locations <- names(test_unique_locations2[!test_unique_locations2])
+    issues_ID <- unique(as.character(data[, col_source_ID, drop = TRUE])[data$.location %in% issues_locations])
+    warning(c(
+      paste("The same combination of latitude, longitude and elevation correspond to different source_ID. Please consider fixing the data for the IDs:\n"),
+      paste(issues_ID, collapse = ", "),
+      paste("\nThese IDs correspond to the following sets of", col_lat, col_long, col_elev, ":\n"),
+      paste(issues_locations, collapse = ", ")
+    ))
+    rm(issues_ID)
+    rm(issues_locations)
+  }
+  data$.location <- NULL
 
   ## Handle missing data
   if (missing("year")) year <- sort(unique(data[, col_year, drop = TRUE], na.rm = TRUE))

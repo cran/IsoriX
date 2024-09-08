@@ -21,9 +21,9 @@ session, and \code{FALSE} otherwise.}
 }
 \description{
 This functions turns the WorldClim data downloaded using the function
-\link{getprecip} into a \emph{RasterBrick} of same resolution and
+\code{\link{getprecip}} into a \emph{SpatRaster} of same resolution and
 extent as the structural raster. This function is designed to be used with
-\link{isomultiscape}.
+\code{\link{isomultiscape}}.
 }
 \examples{
 
@@ -42,10 +42,11 @@ extent as the structural raster. This function is designed to be used with
 #                         aggregation_factor = 0)
 #
 ### We download the precipitation data:
-# getprecip(path = "~/Downloads/")
+# temp_folder <- tempdir()
+# getprecip(path = temp_folder)
 #
 ### We prepare the raster brick with all the precipitation data:
-# PrecipitationBrick <- prepcipitate(path = "~/Downloads/",
+# PrecipitationBrick <- prepcipitate(path = temp_folder,
 #                                    raster = StrRaster)
 #
 ### We plot the precipitation data:
@@ -53,9 +54,9 @@ extent as the structural raster. This function is designed to be used with
 
 }
 \seealso{
-\link{getprecip} to download the relevant precipitation data
+\code{\link{getprecip}} to download the relevant precipitation data
 
-\link{PrecipBrickDE} for the stored precipitation data for Germany
+\code{\link{PrecipBrickDE}} for the stored precipitation data for Germany
 
-\link{prepelev} to prepare an elevation raster
+\code{\link{prepelev}} to prepare an elevation raster
 }

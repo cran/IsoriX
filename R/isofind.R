@@ -10,7 +10,7 @@
 #' than its original location), the test statistics follows a normal
 #' distribution with mean zero and a certain variance that stems from both the
 #' isoscape model fits and the calibration fit. The function
-#' [isofind] computes the map of p-value for such an assignment test
+#' [`isofind`] computes the map of p-value for such an assignment test
 #' (i.e. the p-values in all locations of the isoscape) for all samples in the
 #' dataframe `data`. The function also performs a single assignment for the
 #' entire group by combining the p-value maps of all samples using the Fisher's
@@ -23,7 +23,7 @@
 #' **Details on parameters:**
 #'
 #' - *neglect_covPredCalib*: as long as the calibration method used in
-#' [calibfit] is "wild", a covariance is expected between the
+#' [`calibfit`] is "wild", a covariance is expected between the
 #' uncertainty of predictions from the isoscape mean fit and the uncertainty in
 #' predictions from the calibration fit. This is because both the isoscape and
 #' the calibration use in part the same data. By default this term is omitted
@@ -31,19 +31,19 @@
 #' since in practice it seems to affect the results only negligibly in our
 #' trials and the computation of this term can be quite computer intensive. We
 #' nonetheless recommend to set `neglect_covPredCalib` to `FALSE` in
-#' your final analysis. If the calibration method used in [calibfit]
+#' your final analysis. If the calibration method used in [`calibfit`]
 #' is not "wild", this parameter has no effect.
 #'
 #' - *mask*: a mask can be used so to remove all values falling in the mask.
 #' This can be useful for performing for example assignments on lands only and
 #' discard anything falling in large bodies of water (see example). By default
-#' our [OceanMask] is considered. Setting `mask` to NULL allows
+#' our [`OceanMask`] is considered. Setting `mask` to NULL allows
 #' to prevent this automatic behaviour.
 #'
 #' @aliases isofind print.ISOFIND summary.ISOFIND
 #' @param data A *dataframe* containing the assignment data (see note below)
-#' @param isoscape The output of the function [isoscape]
-#' @param calibfit The output of the function [calibfit] (This
+#' @param isoscape The output of the function [`isoscape`]
+#' @param calibfit The output of the function [`calibfit`] (This
 #'   argument is not needed if the isoscape had been fitted using isotopic
 #'   ratios from sedentary animals.)
 #' @param mask A polygon of class *SpatVector* representing a mask to replace values on all
@@ -66,10 +66,10 @@
 #'   `group` contains one raster storing the p-values of the assignment for
 #'   the group. The *list* `sp_points` contains two spatial point
 #'   objects: `sources` and `calibs`.
-#' @note See [AssignDataAlien] to know which variables are needed to
+#' @note See [`AssignDataAlien`] to know which variables are needed to
 #'   perform the assignment and their names.
-#' @references Courtiol A, Rousset F, Rohwäder M, Soto DX, Lehnert L, Voigt CC, Hobson KA, Wassenaar LI, Kramer-Schadt S (2019). Isoscape
-#' computation and inference of spatial origins with mixed models using the R package IsoriX. In Hobson KA, Wassenaar LI (eds.),
+#' @references Courtiol A, Rousset F, Rohwäder M, Soto DX, Lehnert L, Voigt CC, Hobson KA, Wassenaar LI & Kramer-Schadt S (2019). Isoscape
+#' computation and inference of spatial origins with mixed models using the R package IsoriX. In Hobson KA & Wassenaar LI (eds.),
 #' Tracking Animal Migration with Stable Isotopes, second edition. Academic Press, London.
 #'
 #' Fisher, R.A. (1925). Statistical Methods for Research Workers.
@@ -156,9 +156,8 @@
 #'   )
 #'   ## We plot the assignment and
 #'   ## show where the station really is (using lattice)
-#'   plot(AssignedGP) +
+#'   plot(AssignedGP, plot = FALSE) +
 #'     xyplot(47.48 ~ 11.06,
-#'       panel = panel.points,
 #'       cex = 5, pch = 13, lwd = 2, col = "black"
 #'     )
 #' }
@@ -170,6 +169,21 @@ isofind <- function(data,
                     mask = NA,
                     neglect_covPredCalib = TRUE,
                     verbose = interactive()) {
+  ### Check that sample_IDs correspond to unique locations if lat and long provided (not compulsory since not used to do the assignment but only for plotting)
+  if (!is.null(data$lat) && !is.null(data$long)) {
+    data$.location <- paste(data[, "lat", drop = TRUE], data[, "long", drop = TRUE], sep = "_")
+    test_unique_locations <- tapply(data$.location, as.character(data[, "sample_ID", drop = TRUE]), \(x) length(unique(x)) == 1)
+    if (!all(test_unique_locations)) {
+      issues <- names(test_unique_locations[!test_unique_locations])
+      warning(c(
+        paste("Different combinations of latitude and longitude share the same sample_ID. Please consider fixing the data for the following sample(s):\n"),
+        paste(issues, collapse = ", ")
+      ))
+      rm(issues)
+    }
+    data$.location <- NULL
+  }
+
   ### WE COMPUTE THE TEST STATISTIC
   if (verbose) {
     print("computing the test statistic and its variance...")

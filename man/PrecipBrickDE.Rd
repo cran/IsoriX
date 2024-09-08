@@ -5,10 +5,10 @@
 \alias{PrecipBrickDE}
 \title{The precipitation monthly amounts for Germany}
 \format{
-A \emph{RasterBrick}
+A \emph{SpatRaster} with 12 layers
 }
 \source{
-\url{https://www.worldclim.org/data/worldclim21.html}
+\url{https://worldclim.org/data/worldclim21.html}
 }
 \description{
 This brick of rasters contains the monthly precipitation amounts (in mm) for
@@ -16,7 +16,7 @@ Germany with a resolution of approximately 30 square-km.
 }
 \details{
 The data are derived from "precipitation (mm) WorldClim Version2" which can
-be downloaded using the function \link{getprecip}.
+be downloaded using the function \code{\link{getprecip}}.
 }
 \examples{
 
@@ -33,6 +33,6 @@ be downloaded using the function \link{getprecip}.
 
 }
 \seealso{
-\link{prepcipitate} to prepare this raster
+\code{\link{prepcipitate}} to prepare this raster
 }
 \keyword{datasets}

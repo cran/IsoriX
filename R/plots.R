@@ -1,7 +1,10 @@
 #' Plotting functions for IsoriX
 #'
 #' These functions plot objects created by IsoriX (with the exception of plot
-#' method for SpatRaster created using [terra].
+#' method for SpatRaster created using [`terra::terra`]. All plotting functions
+#' are based on the powerful package \pkg{lattice}. If instead you want to
+#' use \pkg{ggplot2}, please follow the instructions on the
+#' [online tutorial](https://bookdown.org/content/782/advanced.html#ggplot).
 #'
 #'
 #' **General**
@@ -18,7 +21,7 @@
 #'
 #' When called upon an object of class *SpatRaster*, the plot function displays
 #' the raster (just for checking things fast and dirty). In this case, the
-#' function is a simple shortcut to [rasterVis::levelplot].
+#' function is a simple shortcut to [`rasterVis::levelplot`].
 #'
 #'
 #' **Plotting isoscapes**
@@ -51,7 +54,7 @@
 #' if the name of the layer should be displayed or not. The element `title` is a
 #' string or a call used to define the rest of the title. By default it draws
 #' the delta value for hydrogen. Check the syntax of this default before trying
-#' to modify it.
+#' to modify it. If you want to modify it for all plots, see [`getOption_IsoriX`].
 #'
 #' The arguments `cutoff`, `sources`, `calibs`, `assigns`, `borders`, `mask`,
 #' and `mask2` are used to fine-tune additional layers that can be added to the
@@ -64,13 +67,13 @@
 #' extra mask can be used (mask2), as one may want to add a mask covering the
 #' area outside the biological range of the species. Within these lists, the
 #' elements `lwd`, `col`, `cex`, `pch` and `fill` influences their respective
-#' objects as in traditional R plotting functions (see [par] for details). The
+#' objects as in traditional R plotting functions (see [`par`] for details). The
 #' element `draw` should be a *logical* that indicates whether the layer must be
 #' created or not. The argument `borders` (within the list borders) expects an
-#' object of the class *SpatVector*, such as the object [CountryBorders]
+#' object of the class *SpatVector*, such as the object [`CountryBorders`]
 #' provided with this package. The argument `mask` (within the list mask)
 #' also expects an object of the class *SpatVector*, such as the object
-#' [OceanMask] provided with this package (see examples).
+#' [`OceanMask`] provided with this package (see examples).
 #'
 #' The argument `palette` is used to define how to colour the isoscape and
 #' assignment plot. Within this list, `step` defines the number of units on the
@@ -81,9 +84,9 @@
 #' maximum number of numbers plotted on the z-scale; `digits` defines the number
 #' of digits displayed for the numbers used as labels; and `fn` is used to
 #' specify the function that is used to sample the colours. If `fn` is NULL
-#' (default) the palette functions derived from [isopalette1] and [isopalette2]
+#' (default) the palette functions derived from [`isopalette1`] and [`isopalette2`]
 #' are used when plotting isoscape and assignments, respectively. If `fn` is NA
-#' the function used is the palette [viridisLite::viridis].
+#' the function used is the palette [`viridisLite::viridis`].
 #'
 #' **Default symbols used on maps**
 #'
@@ -99,8 +102,8 @@
 #' @name plots
 #' @aliases plot.ISOFIT plot.ISOSCAPE plot.CALIBFIT plot.ISOFIND
 #'   plot.SpatRaster
-#' @param x The return object of a call to [isofit], [isoscape], [calibfit],
-#'   [isofind], or [terra::rast]]
+#' @param x The return object of a call to [`isofit`], [`isoscape`], [`calibfit`],
+#'   [`isofind`], or [`terra::rast`]
 #' @param cex_scale A *numeric* giving a scaling factor for the points in
 #'   the plots
 #' @param which A *string* indicating the name of the raster to be plotted
@@ -138,9 +141,9 @@
 #'   plot.CALIBFIT
 #' @param ylim A range defining the extreme coordinates for the the y-axis in
 #'   plot.CALIBFIT
-#' @param pch The argument pch as in [par] for plot.CALIBFIT and
+#' @param pch The argument pch as in [`par`] for plot.CALIBFIT and
 #'   points.CALIBFIT
-#' @param col The argument col as in [par] for plot.CALIBFIT and
+#' @param col The argument col as in [`par`] for plot.CALIBFIT and
 #'   points.CALIBFIT
 #' @param line A *list* containing two elements: `show`, a
 #'   *logical* indicating whether to show the regression line or not; and
@@ -153,13 +156,13 @@
 #' @param ... Additional arguments (only in use in plot.CALIBFIT and
 #'   plot.SpatRaster)
 #'
-#' @seealso [isofit] for the function fitting the isoscape
+#' @seealso [`isofit`] for the function fitting the isoscape
 #'
-#'   [isoscape] for the function building the isoscape
+#'   [`isoscape`] for the function building the isoscape
 #'
-#'   [calibfit] for the function fitting the calibration function
+#'   [`calibfit`] for the function fitting the calibration function
 #'
-#'   [isofind] for the function performing the assignment
+#'   [`isofind`] for the function performing the assignment
 #'
 #' @keywords plot
 #' @examples ## See ?isoscape or ?isofind for examples
@@ -171,7 +174,7 @@ NULL
 #' @exportS3Method plot ISOSCAPE
 plot.ISOSCAPE <- function(x,
                           which = "mean",
-                          y_title = list(which = TRUE, title = bquote(delta**2 * H)), ## bquote(italic("\u03B4")**2*H[p]) does not work on all system...
+                          y_title = list(which = TRUE, title = getOption_IsoriX("title_delta_notation")),
                           sources = list(draw = TRUE, cex = 0.5, pch = 2, lwd = 1, col = "red"),
                           borders = list(borders = NA, lwd = 0.5, col = "black"),
                           mask = list(mask = NA, lwd = 0, col = "black", fill = "black"),
@@ -225,7 +228,7 @@ plot.ISOSCAPE <- function(x,
 
   ## compute the colors
   colours <- .cut_and_color(
-    var = x$isoscape[[which]], # @data@values,
+    var = x$isoscapes[[which]], # @data@values,
     step = palette$step,
     range = palette$range,
     palette = palette$fn,
@@ -244,8 +247,8 @@ plot.ISOSCAPE <- function(x,
   ##  allows for the evaluation of arguments.
   ##  (the stars are used to remove spaces)
 
-  map <- rasterVis::levelplot(x$isoscape[[which]],
-    maxpixels = prod(dim(x$isoscape[[which]])[1:2]),
+  map <- rasterVis::levelplot(x$isoscapes[[which]],
+    maxpixels = prod(dim(x$isoscapes[[which]])[1:2]),
     margin = FALSE,
     col.regions = colours$all_cols,
     at = colours$at,
@@ -280,7 +283,7 @@ plot.ISOSCAPE <- function(x,
 
   ## build the 3D-Sphere
   if (sphere$build) {
-    .build_sphere(x$isoscape[[which]], colours = colours, decor = decor)
+    .build_sphere(x$isoscapes[[which]], colours = colours, decor = decor)
     if (!sphere$keep_image) {
       message(paste(
         "IsoriX no longer delete the image used to build the sphere since it prevents rgl to work on some system. \n",
@@ -315,7 +318,7 @@ plot.ISOSCAPE <- function(x,
     col.regions = colours$all_cols,
     at = colours$at,
     colorkey = FALSE,
-    maxpixel = prod(dim(x)[1:2])
+    maxpixels = prod(dim(x)[1:2])
   ) + decor$borders_layer +
     decor$mask_layer + decor$mask2_layer + decor$sources_layer + decor$calibs_layer
   grDevices::png(filename = "IsoriX_world_image.png", width = 2 * dim(x)[2], height = 2 * dim(x)[1])
@@ -334,8 +337,8 @@ plot.ISOSCAPE <- function(x,
   while (length(rgl::rgl.dev.list()) > 0) rgl::close3d() ## close all open rgl devices
   makerglsphere <- function(x, y = NULL, z = NULL, ng = 50, radius = 1, color = "white", add = FALSE, ...) {
     ## code inspired from https://stackoverflow.com/questions/30627647/how-to-plot-a-perfectly-round-sphere-in-r-rgl-spheres
-    lat <- matrix(seq(90, -90, len = ng) * pi / 180, ng, ng, byrow = TRUE)
-    long <- matrix(seq(-180, 180, len = ng) * pi / 180, ng, ng)
+    lat <- matrix(seq(90, -90, length.out = ng) * pi / 180, ng, ng, byrow = TRUE)
+    long <- matrix(seq(-180, 180, length.out = ng) * pi / 180, ng, ng)
     xyz <- grDevices::xyz.coords(x, y, z, recycle = TRUE)
     vertex <- matrix(rbind(xyz$x, xyz$y, xyz$z), nrow = 3, dimnames = list(c("x", "y", "z"), NULL))
     nvertex <- ncol(vertex)
@@ -605,7 +608,7 @@ If you want to build several spheres, build them one by one and do request a sin
   cols <- all_cols[match(cats, levels(cats))]
   at_keys <- where_cut
   if (length(at_keys) > n_labels) {
-    at_keys <- seq(min(where_cut), max(where_cut), length = n_labels)
+    at_keys <- seq(min(where_cut), max(where_cut), length.out = n_labels)
     if (!is.na(cutoff)) {
       at_keys <- sort(unique(c(cutoff, at_keys)))
     }
@@ -801,7 +804,7 @@ plotting_calibfit <- function(x, pch, col, line, CI, xlab, ylab, xlim = NULL, yl
     x$data,
     seq(min(x_var),
       max(x_var),
-      length = 100
+      length.out = 100
     )
   )
   X <- cbind(1, xs)
