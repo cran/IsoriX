@@ -9,7 +9,7 @@
     "\n",
     "\n Type:",
     "\n   * `?IsoriX` for a very short description",
-    "\n   * `browseURL('https://bookdown.org/content/782/')` for a longer (online) documentation",
+    "\n   * `browseURL('https://courtiol-isorix.share.connect.posit.cloud/')` for a longer (online) documentation",
     "\n   * `help(package = 'IsoriX', help_type = 'html')` for a list of the package objects and help files",
     "\n   * `citation('IsoriX')` for how to cite IsoriX (i.e. the papers you should read)",
     "\n   * `news(package = 'IsoriX')` for info on changed between versions of IsoriX",
@@ -362,12 +362,12 @@ release_bullets <- function() {
     "run `lintr::lint_package()` for checking code in depth",
     "run `all_checks <- rhub::rhub_check()`",
     "run `usethis::use_cran_comments()` and paste the output of `all_checks$cran_summary()` in the created file",
-    "run `make build` & `make check` in terminal",
+    "run `make build` & `make check` in terminal (at the root of the repo)",
     "check folder `IsoriX.Rcheck` and file in there",
     "run `tests/local_tests.R` step-by-step",
     "update manual using `devtools::build_manual(path = '../pkg_manuals')`",
     "rebuilt bookdown (after `usethis::use_version('patch')`) to make sure all works in there too (follow instructions in bookdown/README)",
-    "update bookdown (follow instructions in bookdown/README)",
+    "update bookdown (after `usethis::use_version('patch'); follow instructions in bookdown/README)",
     "write email to Google Group (https://groups.google.com/g/IsoriX)"
   )
 }
